@@ -1,13 +1,14 @@
-import './App.css'
-import {Button} from "@/components/ui/button.tsx";
+import { ThemeProvider } from "@/components/theme-provider"
+import {ModeToggle} from "@/components/mode-toggle.tsx";
 
 function App() {
-
-  return (
-    <>
-      <Button>Ok </Button>
-    </>
-  )
+    return (
+        <ThemeProvider>
+            <div className="flex h-screen w-screen items-center justify-center">
+                <ModeToggle />
+            </div>
+        </ThemeProvider>
+    )
 }
 
 export default App
