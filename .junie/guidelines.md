@@ -65,12 +65,6 @@ This project uses Vitest as the test runner and React Testing Library for testin
    pnpm add -D vitest jsdom @testing-library/react @testing-library/jest-dom
    ```
 
-2. Configure Vitest:
-   - Create `vitest.config.ts` at the project root
-   - Configure the JSDOM environment for testing React components
-   - Set up path aliases to match the main project configuration
-
-### Running Tests
 
 - Run tests once:
   ```bash
