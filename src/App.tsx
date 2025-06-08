@@ -1,14 +1,7 @@
-import { ThemeProvider } from "@/components/theme-provider"
-import {ModeToggle} from "@/components/mode-toggle.tsx";
+import { LoginCard } from '@/cards/login-card.tsx';
 
 function App() {
-    return (
-        <ThemeProvider>
-            <div className="flex h-screen w-screen items-center justify-center">
-                <ModeToggle />
-            </div>
-        </ThemeProvider>
-    )
+  return;
 }
 
-export default App
+export default App;
