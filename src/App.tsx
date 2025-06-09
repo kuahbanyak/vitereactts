@@ -1,7 +1,11 @@
-import { LoginCard } from '@/cards/login-card.tsx';
+import HomePage from "@/pages/homePage.tsx";
 
 function App() {
-  return;
+    return (
+        <div>
+            <HomePage />
+        </div>
+    );
 }
 
 export default App;
