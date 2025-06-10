@@ -2,9 +2,11 @@ import HomePage from "@/pages/homePage.tsx";
 
 function App() {
     return (
-        <div>
-            <HomePage />
-        </div>
+        <>
+            <div className=" bg-background text-foreground">
+              <HomePage />
+            </div>
+        </>
     );
 }
 

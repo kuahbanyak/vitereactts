@@ -6,12 +6,19 @@ import {Link} from "@radix-ui/react-navigation-menu";
 
 export default function HomePage() {
     return(
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Home Page</h1>
-            <nav className="flex items-center">
-                <NavigationMenuComponent />
-            </nav>
-        </div>
+        <>
+            <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Home Page</h1>
+                <nav className="flex items-center">
+                    <NavigationMenuComponent/>
+                </nav>
+            </div>
+            <div>
+                <div className="">
+                    <HeroSection/>
+                </div>
+            </div>
+        </>
     );
 }
 function NavigationMenuComponent() {
@@ -52,7 +59,7 @@ function NavigationMenuComponent() {
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Components</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                        <ul className="grid w-[300px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[440px]">
                             {[
                                 {
                                     title: "Button",
@@ -128,7 +135,7 @@ function NavigationMenuComponent() {
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <ul className="grid w-[200px] gap-4">
+                        <ul className="grid w-[100px] gap-4">
                             <li>
                                 <NavigationMenuLink asChild>
                                     <Link href="#">Components</Link>
@@ -160,4 +167,15 @@ function ListItem({title, children, href, ...props}: React.ComponentPropsWithout
             </NavigationMenuLink>
         </li>
     )
+}
+function HeroSection() {
+    return (
+        <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-8 rounded-lg shadow-lg">
+            <h2 className="text-3xl font-bold mb-4">Welcome to Our Website</h2>
+            <p className="text-lg mb-6">Explore our components and documentation.</p>
+            <button className="bg-white text-blue-500 px-4 py-2 rounded-md hover:bg-gray-100">
+                Get Started
+            </button>
+        </div>
+    );
 }
