@@ -31,7 +31,7 @@ export default function ProfilePage() {
         <SiteHeader title="Account" />
         <div className="flex flex-1 flex-col p-6">
           <div className="max-w-xl">
-            <ProfileUser username={user.name || user.email} email={user.email} phone={user.phone} />
+            <ProfileUser name={user.name || user.email} email={user.email} phone={user.phone} />
           </div>
         </div>
       </SidebarInset>
