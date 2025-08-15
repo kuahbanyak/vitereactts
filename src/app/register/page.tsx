@@ -1,8 +1,7 @@
-import { GalleryVerticalEnd } from 'lucide-react';
+import {RegisterForm} from '@/components/register-form';
+import {GalleryVerticalEnd} from "lucide-react";
 
-import { LoginForm } from '@/components/login-form';
-
-export function LoginPage() {
+function RegisterPage() {
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -15,9 +14,9 @@ export function LoginPage() {
                         Acme Inc.
                     </a>
                 </div>
-                <div className="flex flex-1 items-center justify-center">
-                    <div className="w-full max-w-xs">
-                        <LoginForm/>
+                <div className=" items-center justify-center">
+                    <div className="w-full ">
+                        <RegisterForm/>
                     </div>
                 </div>
             </div>
@@ -27,3 +26,5 @@ export function LoginPage() {
         </div>
     );
 }
+
+export default RegisterPage;
