@@ -16,8 +16,9 @@ import { useNavigate } from 'react-router-dom';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user, logout } = useAuth();
+  const { user, logout, } = useAuth();
   const navigate = useNavigate();
+
 
   const handleLogout = () => {
     logout();

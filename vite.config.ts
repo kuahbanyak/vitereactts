@@ -9,9 +9,19 @@ export default defineConfig({
       react(),
       tailwindcss()
   ],
-    resolve: {
-        alias: {
-            "@": path.resolve(__dirname, "./src"),
-        },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  server: {
+    proxy: {
+      '/api/v1': {
+        target: 'https://go-crud.up.railway.app',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api\/v1/, '/api/v1')
+      }
     }
+  }
 })
