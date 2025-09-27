@@ -1,12 +1,11 @@
 import * as React from "react"
 import {
-  IconCamera,
   IconDashboard,
   IconDatabase,
-  IconFileAi,
-  IconFileDescription,
   IconInnerShadowTop,
 } from "@tabler/icons-react"
+
+import { useAuth } from '@/auth/use-auth';
 
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
@@ -21,75 +20,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const data = {
-  // user data now comes from auth context in NavUser
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
-    },
-  
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    }
-  ],
-}
+const documents = [
+  { name: 'Data Library', url: '#', icon: IconDatabase }
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, isLoading } = useAuth();
+  const navItems = [ { title: 'Dashboard', url: '/dashboard', icon: IconDashboard } ];
+  if (user?.role === 'admin') navItems.push({ title: 'Users', url: '/dashboard/users', icon: IconDatabase });
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -99,7 +37,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a >
+              <a>
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
               </a>
@@ -108,12 +46,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain}   />
-        <NavDocuments items={data.documents} />
+        {isLoading ? (
+          <div className="p-4 text-sm text-muted-foreground">Loading menu...</div>
+        ) : (
+          <>
+            <NavMain items={navItems} />
+            <NavDocuments items={documents} />
+          </>
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

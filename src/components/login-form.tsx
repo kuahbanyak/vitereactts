@@ -14,7 +14,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -75,11 +74,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Login'}
         </Button>
-
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{' '}
-        <a href="#" className="underline underline-offset-4">
+        <a href="/register" className="underline underline-offset-4">
           Sign up
         </a>
       </div>
