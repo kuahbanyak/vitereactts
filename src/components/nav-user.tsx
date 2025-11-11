@@ -1,4 +1,4 @@
-import { IconCreditCard, IconDotsVertical, IconLogout, IconNotification, IconUserCircle } from '@tabler/icons-react';
+import { IconCreditCard, IconDotsVertical, IconLogout, IconNotification, IconUserCircle, IconMoon, IconSun } from '@tabler/icons-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -8,16 +8,21 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/auth/use-auth';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/components/theme-provider';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, logout, } = useAuth();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
 
   const handleLogout = () => {
@@ -77,6 +82,25 @@ export function NavUser() {
                 <IconNotification />
                 Notifications
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  {theme === 'dark' ? <IconMoon className="w-4 h-4" /> : <IconSun className="w-4 h-4" />}
+                  Theme
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onClick={() => setTheme('light')}>
+                    <IconSun className="w-4 h-4" />
+                    Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('dark')}>
+                    <IconMoon className="w-4 h-4" />
+                    Dark
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('system')}>
+                    System
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

@@ -27,7 +27,7 @@ const documents = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useAuth();
   const navItems = [ { title: 'Dashboard', url: '/dashboard', icon: IconDashboard } ];
-  if (user?.role === 'admin') navItems.push({ title: 'Users', url: '/dashboard/users', icon: IconDatabase });
+  if (user?.role?.toLowerCase() === 'admin') navItems.push({ title: 'Users', url: '/dashboard/users', icon: IconDatabase });
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

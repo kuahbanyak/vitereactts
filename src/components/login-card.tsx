@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -11,21 +10,38 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
+import { ReactNode } from 'react';
 
-export function LoginCard() {
+interface LoginCardProps {
+  title?: string;
+  description?: string;
+  onSubmit?: (e: React.FormEvent) => void;
+  signUpLink?: string;
+  showGoogleLogin?: boolean;
+  additionalActions?: ReactNode;
+}
+
+export function LoginCard({
+  title = 'Login to your account',
+  description = 'Enter your email below to login to your account',
+  onSubmit,
+  signUpLink = '/register',
+  showGoogleLogin = true,
+  additionalActions,
+}: LoginCardProps) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>Enter your email below to login to your account</CardDescription>
-        <CardAction>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+        <div className="flex items-center justify-end">
           <Button asChild variant="link">
-            <Link to="/register">Sign Up</Link>
+            <Link to={signUpLink}>Sign Up</Link>
           </Button>
-        </CardAction>
+        </div>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={onSubmit}>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -50,9 +66,12 @@ export function LoginCard() {
         <Button type="submit" className="w-full">
           Login
         </Button>
-        <Button variant="outline" className="w-full">
-          Login with Google
-        </Button>
+        {showGoogleLogin && (
+          <Button variant="outline" className="w-full">
+            Login with Google
+          </Button>
+        )}
+        {additionalActions}
       </CardFooter>
     </Card>
   );
