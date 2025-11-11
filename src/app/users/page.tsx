@@ -43,7 +43,7 @@ export default function UsersPage() {
     }
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [canManage]);
+  useEffect(() => { load(); }, [canManage]);
 
   const onEdit = (u: any) => {
     setForm({ id: u.id, name: u.name, email: u.email, phone: u.phone || '', role: u.role || 'USER' });

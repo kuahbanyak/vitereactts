@@ -1,11 +1,12 @@
 import {RegisterForm} from '@/components/register-form';
 import {GalleryVerticalEnd} from "lucide-react";
+import { ModeToggle } from '@/components/mode-toggle';
 
 function RegisterPage() {
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">
-                <div className="flex justify-center gap-2 md:justify-start">
+                <div className="flex justify-between items-center gap-2">
                     <a href="#" className="flex items-center gap-2 font-medium">
                         <div
                             className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
@@ -13,6 +14,7 @@ function RegisterPage() {
                         </div>
                         Acme Inc.
                     </a>
+                    <ModeToggle />
                 </div>
                 <div className=" items-center justify-center">
                     <div className="w-full ">
@@ -21,7 +23,7 @@ function RegisterPage() {
                 </div>
             </div>
             <div className="bg-muted relative hidden lg:block">
-                <img src="/src/assets/cover.png" alt="Image" className="w-full h-full object-fill"/>
+                <img src="/cover.png" alt="Image" className="w-full h-full object-fill"/>
             </div>
         </div>
     );

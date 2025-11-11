@@ -5,6 +5,7 @@ import {LoginPage} from '@/app/login/page';
 import RegisterPage from '@/app/register/page';
 import {Page as DashboardPage} from '@/app/dashboard/page';
 import {ProfilePage} from './app/profile/page';
+import AllUserPage from '@/pages/users/allUserPage';
 
 function PrivateRoute({children}: { children: React.ReactElement }) {
     const {isAuthenticated, isLoading} = useAuth();
@@ -26,7 +27,6 @@ function App() {
                             <PrivateRoute>
                                 <DashboardPage/>
                             </PrivateRoute>
-
                         }
                     />
                     <Route
@@ -34,6 +34,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <ProfilePage/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/users"
+                        element={
+                            <PrivateRoute>
+                                <AllUserPage/>
                             </PrivateRoute>
                         }
                     />
