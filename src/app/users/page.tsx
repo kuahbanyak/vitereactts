@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/auth/use-auth';
+import { userService } from '@/pages/users/userService';
+import type { User, UpdateUserPayload } from '@/types/user.types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,45 +21,46 @@ interface FormState {
 const emptyForm: FormState = { name: '', email: '', phone: '', password: '', role: 'USER' };
 
 export default function UsersPage() {
-  const { user, listUsers, createUser, updateUser, deleteUser } = useAuth();
-  const [items, setItems] = useState<any[]>([]);
+  const { user } = useAuth();
+  const [items, setItems] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  const canManage = user?.role === 'ADMIN' && listUsers && createUser && updateUser && deleteUser;
+  const canManage = user?.role === 'ADMIN';
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!canManage) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await listUsers();
+      const data = await userService.getAll();
       setItems(data);
-    } catch (e:any) {
-      setError(e.message || 'Failed to load users');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to load users';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  };
+  }, [canManage]);
 
-  useEffect(() => { load(); }, [canManage]);
+  useEffect(() => { load(); }, [load]);
 
-  const onEdit = (u: any) => {
+  const onEdit = (u: User) => {
     setForm({ id: u.id, name: u.name, email: u.email, phone: u.phone || '', role: u.role || 'USER' });
     setShowForm(true);
   };
 
-  const onDelete = async (u: any) => {
-    if (!deleteUser) return;
+  const onDelete = async (u: User) => {
     if (!confirm(`Delete user ${u.email}?`)) return;
     try {
-      await deleteUser(u.id);
+      await userService.deleteUser(u.id, u.name || u.email);
       setItems(prev => prev.filter(x => x.id !== u.id));
-    } catch (e:any) {
-      alert(e.message || 'Delete failed');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Delete failed';
+      alert(errorMessage);
     }
   };
 
@@ -73,17 +76,20 @@ export default function UsersPage() {
     setError(null);
     try {
       if (form.id) {
-        const payload: any = { name: form.name, email: form.email, phone: form.phone, role: form.role };
+        const payload: UpdateUserPayload = { name: form.name, email: form.email, phone: form.phone, role: form.role };
         if (form.password) payload.password = form.password;
-        const updated = await updateUser!(form.id, payload);
-        setItems(prev => prev.map(i => (i.id === updated.id ? updated : i)));
+        const updated = await userService.update(form.id, payload);
+        if (updated) {
+          setItems(prev => prev.map(i => (i.id === updated.id ? updated : i)));
+        }
       } else {
-        const created = await createUser!({ name: form.name, email: form.email, password: form.password || 'ChangeMe123!', phone: form.phone, role: form.role });
+        const created = await userService.create({ name: form.name, email: form.email, password: form.password || 'ChangeMe123!', phone: form.phone, role: form.role });
         setItems(prev => [created, ...prev]);
       }
       resetForm();
-    } catch (e:any) {
-      setError(e.message || 'Save failed');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Save failed';
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -184,4 +190,3 @@ export default function UsersPage() {
     </SidebarProvider>
   );
 }
-
