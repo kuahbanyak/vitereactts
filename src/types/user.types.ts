@@ -10,11 +10,22 @@ export interface User {
   last_name?: string;
 }
 
-export interface UpdateUserPayload {
-  first_name: string;
-  last_name: string;
-  role: string;
+export interface CreateUserPayload {
+  name: string;
   email: string;
+  password: string;
+  phone?: string;
+  role?: string;
+}
+
+export interface UpdateUserPayload {
+  first_name?: string;
+  last_name?: string;
+  name?: string;
+  role?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
 }
 
 export interface UserFormData {
