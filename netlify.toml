@@ -1,0 +1,20 @@
+[build]
+  command = "pnpm install && pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# API proxy for backend calls (if VITE_API_BASE_URL is not set)
+[[redirects]]
+  from = "/api/v1/*"
+  to = "https://go-crud.up.railway.app/api/v1/:splat"
+  status = 200
+  force = true
+
+# SPA fallback - must be last
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
