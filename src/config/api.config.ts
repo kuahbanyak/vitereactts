@@ -4,16 +4,16 @@
  */
 
 // Get API base URL from environment variable
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // API endpoints
 export const API_ENDPOINTS = {
   // Auth endpoints
   AUTH: {
-    LOGIN: 'auth/login',
-    REGISTER: 'auth/register',
-    LOGOUT: 'auth/logout',
-    PROFILE: 'users/profile',
+    LOGIN: 'api/v1/auth/login',
+    REGISTER: 'api/v1/auth/register',
+    LOGOUT: 'api/v1/auth/logout',
+    PROFILE: 'api/v1/users/profile',
   },
   // User endpoints
   USERS: {
