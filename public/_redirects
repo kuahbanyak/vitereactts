@@ -1,2 +1,2 @@
-/*    /index.html   200
-
+# API proxy for backend calls - MUST come before SPA fallback
+/api/v1/*  https://go-crud.up.railway.app/api/v1/:splat  200!
