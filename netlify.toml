@@ -4,6 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Use relative URL to leverage Netlify proxy and avoid CORS
+  VITE_API_BASE_URL = "/"
 
 # API proxy for backend calls (if VITE_API_BASE_URL is not set)
 [[redirects]]
