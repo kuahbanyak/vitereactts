@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/auth/use-auth';
 import { userService } from '@/pages/users/userService';
-import type { User, UpdateUserPayload } from '@/types/user.types';
+import type { User, UpdateUserPayload, Role } from '@/types/user.types';
+import { hasRole } from '@/auth/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
+import { RoleBadge } from '@/components/role-badge';
+import { ROLE_NAMES } from '@/config/env.config';
 
 interface FormState {
   id?: string;
@@ -18,7 +21,39 @@ interface FormState {
   role: string;
 }
 
-const emptyForm: FormState = { name: '', email: '', phone: '', password: '', role: 'USER' };
+const emptyForm: FormState = { name: '', email: '', phone: '', password: '', role: ROLE_NAMES.CUSTOMER };
+
+// Available roles matching backend configuration
+const AVAILABLE_ROLES: Role[] = [
+  {
+    id: '1',
+    name: ROLE_NAMES.ADMIN,
+    display_name: 'Administrator',
+    description: 'Full system access and management capabilities',
+    is_active: true
+  },
+  {
+    id: '2',
+    name: ROLE_NAMES.MANAGER,
+    display_name: 'Manager',
+    description: 'Can manage operations and view reports',
+    is_active: true
+  },
+  {
+    id: '3',
+    name: ROLE_NAMES.MECHANIC,
+    display_name: 'Mechanic',
+    description: 'Can perform maintenance tasks and update service status',
+    is_active: true
+  },
+  {
+    id: '4',
+    name: ROLE_NAMES.CUSTOMER,
+    display_name: 'Customer',
+    description: 'Basic user with access to customer features',
+    is_active: true
+  }
+];
 
 export default function UsersPage() {
   const { user } = useAuth();
@@ -29,7 +64,7 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  const canManage = user?.role === 'ADMIN';
+  const canManage = user ? hasRole(user, ROLE_NAMES.ADMIN) : false;
 
   const load = useCallback(async () => {
     if (!canManage) return;
@@ -49,7 +84,8 @@ export default function UsersPage() {
   useEffect(() => { load(); }, [load]);
 
   const onEdit = (u: User) => {
-    setForm({ id: u.id, name: u.name, email: u.email, phone: u.phone || '', role: u.role || 'USER' });
+    const roleName = u.roles && u.roles.length > 0 ? u.roles[0].name : (u.role || 'user');
+    setForm({ id: u.id, name: u.name, email: u.email, phone: u.phone || '', role: roleName });
     setShowForm(true);
   };
 
@@ -133,9 +169,17 @@ export default function UsersPage() {
               </div>
               <div className="grid gap-1">
                 <Label htmlFor="role">Role</Label>
-                <select id="role" className="h-9 rounded-md border bg-background px-3 text-sm" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                  <option value="USER">USER</option>
-                  <option value="ADMIN">ADMIN</option>
+                <select
+                  id="role"
+                  className="h-9 rounded-md border bg-background px-3 text-sm"
+                  value={form.role}
+                  onChange={e => setForm(f => ({ ...f, role: e.target.value }))}
+                >
+                  {AVAILABLE_ROLES.map(role => (
+                    <option key={role.id} value={role.name}>
+                      {role.display_name} - {role.description}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="grid gap-1">
@@ -165,7 +209,13 @@ export default function UsersPage() {
                     <td className="p-2">{u.name}</td>
                     <td className="p-2">{u.email}</td>
                     <td className="p-2">{u.phone || ''}</td>
-                    <td className="p-2">{u.role}</td>
+                    <td className="p-2">
+                      {u.roles && u.roles.length > 0 ? (
+                        <RoleBadge roles={u.roles} />
+                      ) : (
+                        <RoleBadge role={u.role || 'user'} />
+                      )}
+                    </td>
                     <td className="p-2 flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => onEdit(u)}>Edit</Button>
                       <Button variant="destructive" size="sm" onClick={() => onDelete(u)}>Delete</Button>

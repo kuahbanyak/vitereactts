@@ -13,6 +13,13 @@ import { LoadingState } from '@/components/loading-state';
 import { EmptyState } from '@/components/empty-state';
 import { AccessDenied } from '@/components/access-denied';
 import type { UpdateUserPayload, User } from '@/types/user.types';
+import { hasRole, type User as AuthUser } from '@/auth/types';
+
+// Helper to check if user is admin (handles both roles array and single role)
+const isAdmin = (user: AuthUser | null): boolean => {
+  if (!user) return false;
+  return hasRole(user, 'admin');
+};
 
 export default function AllUserPage() {
   const { user: currentUser } = useAuth();
@@ -21,12 +28,14 @@ export default function AllUserPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState<string | null>(null);
 
-  // Load users on mount
+  // Load users on mount - only run once when component mounts and user is admin
   useEffect(() => {
-    if (currentUser?.role?.toLowerCase() === 'admin') {
-      fetchUsers();
+    if (isAdmin(currentUser)) {
+      fetchUsers().then(r => r).catch(err => {
+        console.error('Failed to fetch users:', err);
+      });
     }
-  }, [currentUser, fetchUsers]);
+  }, []);
 
   // Handle edit user
   const handleEdit = (user: typeof users[0]) => {
@@ -59,7 +68,7 @@ export default function AllUserPage() {
   };
 
   // Check if user is admin
-  if (currentUser?.role?.toLowerCase() !== 'admin') {
+  if (!isAdmin(currentUser)) {
     return (
       <SidebarProvider
         style={
@@ -86,7 +95,7 @@ export default function AllUserPage() {
     );
   }
 
-  const currentEditingUser = users.find((u: User) => u.id === editingUser);
+  const currentEditingUser = Array.isArray(users) ? users.find((u: User) => u.id === editingUser) : undefined;
 
   return (
     <SidebarProvider
@@ -120,18 +129,18 @@ export default function AllUserPage() {
                       All Users
                     </CardTitle>
                     <CardDescription>
-                      Total users: {users.length}
+                      Total users: {Array.isArray(users) ? users.length : 0}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <LoadingState loading={loading} />
-                    {!loading && users.length === 0 && (
+                    {!loading && (!Array.isArray(users) || users.length === 0) && (
                       <EmptyState
                         icon={<IconUser className="w-full h-full" />}
                         title="No users found"
                       />
                     )}
-                    {!loading && users.length > 0 && (
+                    {!loading && Array.isArray(users) && users.length > 0 && (
                       <UsersTable
                         users={users}
                         currentUserId={currentUser?.id}

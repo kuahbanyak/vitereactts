@@ -202,10 +202,15 @@ export const authService = {
         email: profileData.email || '',
         name: profileData.name || '',
         phone: profileData.phone || '',
-        role: profileData.role || '',
+        // Extract roles array if available
+        roles: profileData.roles || [],
+        // For backward compatibility, set role field to the first role name
+        role: profileData.roles && profileData.roles.length > 0
+          ? profileData.roles[0].name
+          : (profileData.role || ''),
       };
 
-      console.log('[Auth] Profile fetched successfully');
+      console.log('[Auth] Profile fetched successfully, roles:', user.roles);
       return user;
     } catch (error) {
       console.error('[Auth] Failed to fetch profile:', error);

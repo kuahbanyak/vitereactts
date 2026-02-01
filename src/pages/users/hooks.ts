@@ -3,6 +3,7 @@ import { userService } from './userService';
 import { parseFullName } from '@/utils/helpers';
 import { useResourceManagement, useFormState } from '@/hooks/useResource';
 import type { User, UserFormData } from './types';
+import { getPrimaryRole } from '@/types/user.types';
 
 /**
  * Hook for managing users (CRUD operations)
@@ -12,6 +13,10 @@ export function useUserManagement() {
     confirmDelete: true,
     deleteMessage: (name) => `Are you sure you want to delete user "${name}"?`,
   });
+
+  // Debug: Log users state
+  console.log('[useUserManagement] Current users:', resourceManager.items);
+  console.log('[useUserManagement] Is array?', Array.isArray(resourceManager.items));
 
   // Alias methods with better names
   const fetchUsers = resourceManager.fetchItems;
@@ -56,7 +61,7 @@ export function useUserForm() {
         first_name: firstName,
         last_name: lastName,
         email: user.email,
-        role: user.role.toLowerCase(),
+        role: getPrimaryRole(user).toLowerCase(),
       });
     },
     [form]

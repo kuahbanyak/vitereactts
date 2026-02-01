@@ -4,22 +4,23 @@
  */
 
 // Get API base URL from environment variable
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Default to empty string to use relative URLs (works with Netlify proxy)
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
-// API endpoints
+// API endpoints - all use leading slash for consistent URL construction
 export const API_ENDPOINTS = {
   // Auth endpoints
   AUTH: {
-    LOGIN: 'api/v1/auth/login',
-    REGISTER: 'api/v1/auth/register',
-    LOGOUT: 'api/v1/auth/logout',
-    PROFILE: 'api/v1/users/profile',
+    LOGIN: '/api/v1/auth/login',
+    REGISTER: '/api/v1/auth/register',
+    LOGOUT: '/api/v1/auth/logout',
+    PROFILE: '/api/v1/users/profile',
   },
   // User endpoints
   USERS: {
-    BASE: '/users',
-    BY_ID: (id: string) => `/users/${id}`,
-    PROFILE: '/users/profile',
+    BASE: '/api/v1/users',
+    BY_ID: (id: string) => `/api/v1/users/${id}`,
+    PROFILE: '/api/v1/users/profile',
   },
 } as const;
 

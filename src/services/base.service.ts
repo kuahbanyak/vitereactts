@@ -39,7 +39,20 @@ export class BaseService<T, TCreate = Partial<T>, TUpdate = Partial<T>> {
   async getAll(): Promise<T[]> {
     try {
       const response = await apiClient.get<ApiResponse<T[]>>(this.config.endpoint);
-      return response.data || [];
+      console.log(`[${this.config.resourceName}] API Response:`, response);
+
+      // Handle both direct array and nested data structure
+      let data: T[] = [];
+
+      if (Array.isArray(response.data)) {
+        data = response.data;
+      } else if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+        // Handle nested structure like { success: true, data: [...] }
+        data = (response.data as any).data || [];
+      }
+
+      console.log(`[${this.config.resourceName}] Extracted data:`, data);
+      return data;
     } catch (error) {
       const message = getErrorMessage(error);
       if (this.config.showErrorToast) {

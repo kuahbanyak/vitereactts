@@ -79,7 +79,7 @@ export function UsersTable({
                 <TableCell className="break-all">{user.email}</TableCell>
                 <TableCell>{user.phone || 'N/A'}</TableCell>
                 <TableCell>
-                  <RoleBadge role={user.role} />
+                  <RoleBadge role={user.role} roles={user.roles} />
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">

@@ -1,11 +1,11 @@
 [build]
-  command = "pnpm install && pnpm run build"
+  command = "pnpm install --no-frozen-lockfile && pnpm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  # Use relative URL to leverage Netlify proxy and avoid CORS
-  VITE_API_BASE_URL = "/"
+  # Empty string to use relative URLs - Netlify proxy will forward /api/v1/* to backend
+  VITE_API_BASE_URL = ""
 
 # API proxy for backend calls (if VITE_API_BASE_URL is not set)
 [[redirects]]
