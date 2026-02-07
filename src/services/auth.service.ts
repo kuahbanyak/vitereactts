@@ -1,8 +1,3 @@
-/**
- * Authentication Service
- * Handles all authentication-related operations
- */
-
 import { apiClient, type ApiError } from './api-client';
 import { API_ENDPOINTS } from '@/config/api.config';
 import { decodeToken, getStoredToken } from '@/utils/helpers';
@@ -34,43 +29,29 @@ export interface ProfileResponse {
   message?: string;
 }
 
-/**
- * Token management
- */
+
 export const TokenManager = {
-  /**
-   * Save token to localStorage
-   */
+
   saveToken(token: string): void {
     localStorage.setItem('token', token);
     console.log('[Auth] Token saved, length:', token.length);
   },
 
-  /**
-   * Get token from localStorage
-   */
+
   getToken(): string | null {
     return getStoredToken();
   },
 
-  /**
-   * Remove token from localStorage
-   */
+
   removeToken(): void {
     localStorage.removeItem('token');
     console.log('[Auth] Token removed');
   },
 
-  /**
-   * Check if token exists
-   */
   hasToken(): boolean {
     return !!this.getToken();
   },
 
-  /**
-   * Decode token payload
-   */
   decodeToken<T = unknown>(): T | null {
     const token = this.getToken();
     if (!token) return null;
@@ -78,13 +59,8 @@ export const TokenManager = {
   },
 };
 
-/**
- * Authentication Service
- */
 export const authService = {
-  /**
-   * Login user with email and password
-   */
+
   async login(credentials: LoginCredentials): Promise<{ token: string; user?: User }> {
     try {
       console.log('[Auth] Logging in:', credentials.email);
@@ -99,14 +75,11 @@ export const authService = {
         throw new Error('No authentication token received from server');
       }
 
-      // Save token
       TokenManager.saveToken(token);
 
-      // Extract user data from response or token
       let user: User | undefined = response.data?.user;
 
       if (!user) {
-        // Try to decode user from token
         const payload = TokenManager.decodeToken<{
           user_id?: string;
           sub?: string;
@@ -131,7 +104,6 @@ export const authService = {
     } catch (error: unknown) {
       console.error('[Auth] Login failed:', error);
 
-      // Provide user-friendly error messages
       const apiError = error as ApiError;
 
       if (apiError.message === 'Failed to fetch') {
@@ -150,9 +122,7 @@ export const authService = {
     }
   },
 
-  /**
-   * Register new user
-   */
+
   async register(data: RegisterData): Promise<{ token: string; user?: User }> {
     try {
       console.log('[Auth] Registering user:', data.email);
@@ -167,7 +137,6 @@ export const authService = {
         throw new Error('No authentication token received from server');
       }
 
-      // Save token
       TokenManager.saveToken(token);
 
       const user = response.data?.user;
@@ -180,9 +149,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Get current user profile
-   */
   async getProfile(): Promise<User | null> {
     try {
       if (!TokenManager.hasToken()) {
@@ -193,8 +159,6 @@ export const authService = {
       console.log('[Auth] Fetching profile');
 
       const response = await apiClient.get<ProfileResponse>(API_ENDPOINTS.AUTH.PROFILE);
-
-      // Handle different response structures
       const profileData = response.data;
 
       const user: User = {
@@ -202,9 +166,7 @@ export const authService = {
         email: profileData.email || '',
         name: profileData.name || '',
         phone: profileData.phone || '',
-        // Extract roles array if available
         roles: profileData.roles || [],
-        // For backward compatibility, set role field to the first role name
         role: profileData.roles && profileData.roles.length > 0
           ? profileData.roles[0].name
           : (profileData.role || ''),
@@ -215,7 +177,6 @@ export const authService = {
     } catch (error) {
       console.error('[Auth] Failed to fetch profile:', error);
 
-      // If unauthorized, clear token
       if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
         TokenManager.removeToken();
       }
@@ -224,24 +185,17 @@ export const authService = {
     }
   },
 
-  /**
-   * Logout user
-   */
+
   logout(): void {
     console.log('[Auth] Logging out');
     TokenManager.removeToken();
   },
 
-  /**
-   * Check if user is authenticated
-   */
+
   isAuthenticated(): boolean {
     return TokenManager.hasToken();
   },
 
-  /**
-   * Get user from token without API call
-   */
   getUserFromToken(): User | null {
     const payload = TokenManager.decodeToken<{
       user_id?: string;

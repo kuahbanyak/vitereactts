@@ -1,6 +1,4 @@
-// Shared user-related TypeScript interfaces and types
 
-// Role type matching the backend Role entity
 export interface Role {
   id: string;
   name: string;
@@ -19,15 +17,13 @@ export interface User {
   address?: string;
   first_name?: string;
   last_name?: string;
-  // Roles is an array from the backend (many-to-many relationship)
   roles?: Role[];
-  // Legacy single role field for backward compatibility
   role?: string;
   created_at?: string;
   updated_at?: string;
 }
 
-// Helper to get the primary role name from user
+
 export function getPrimaryRole(user: User): string {
   if (user.roles && user.roles.length > 0) {
     return user.roles[0].display_name || user.roles[0].name;
@@ -35,7 +31,6 @@ export function getPrimaryRole(user: User): string {
   return user.role || 'customer';
 }
 
-// Helper to check if user has a specific role
 export function hasRole(user: User, roleName: string): boolean {
   if (user.roles && user.roles.length > 0) {
     return user.roles.some(r => r.name.toLowerCase() === roleName.toLowerCase());

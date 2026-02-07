@@ -1,10 +1,5 @@
-/**
- * API Client Service
- * Centralized API configuration and request handling
- */
-
 import { API_BASE_URL } from '@/config/api.config';
-import { getStoredToken } from '@/utils/helpers';
+import { getStoredToken, isTokenExpired } from '@/utils/helpers';
 
 const API_URL = API_BASE_URL;
 
@@ -14,9 +9,6 @@ export interface ApiError {
   data?: unknown;
 }
 
-/**
- * Get authentication headers with Bearer token
- */
 export function getAuthHeaders(): HeadersInit {
   const token = getStoredToken();
   const headers: HeadersInit = {
@@ -29,14 +21,24 @@ export function getAuthHeaders(): HeadersInit {
 
   return headers;
 }
+function checkTokenExpiration(): void {
+  const token = getStoredToken();
+  if (token && isTokenExpired(token)) {
+    console.warn('[API] Token has expired');
+    const error: ApiError = {
+      message: 'Your session has expired. Please login again.',
+      status: 401,
+    };
+    throw error;
+  }
+}
 
-/**
- * Base fetch wrapper with error handling
- */
 export async function apiFetch<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
+  checkTokenExpiration();
+
   const url = `${API_URL}${endpoint}`;
 
   console.log(`[API] ${options.method || 'GET'} ${url}`);
@@ -47,8 +49,6 @@ export async function apiFetch<T>(
       ...getAuthHeaders(),
       ...options.headers,
     },
-    // Only include credentials if not using external API
-    // Remove credentials: 'include' to fix CORS issues
     mode: 'cors',
   };
 
@@ -56,8 +56,6 @@ export async function apiFetch<T>(
     const response = await fetch(url, config);
 
     console.log(`[API] Response status: ${response.status}`);
-
-    // Handle non-OK responses
     if (!response.ok) {
       const errorText = await response.text();
       let errorMessage = `Request failed with status ${response.status}`;
@@ -73,12 +71,13 @@ export async function apiFetch<T>(
         message: errorMessage,
         status: response.status,
       };
-
       console.error('[API] Error:', error);
+      if (response.status === 401) {
+        window.dispatchEvent(new CustomEvent('api-error', { detail: error }));
+      }
       throw error;
     }
 
-    // Parse response
     const data = await response.json();
     console.log('[API] Success:', data);
 
@@ -87,20 +86,14 @@ export async function apiFetch<T>(
     if (error && typeof error === 'object' && 'status' in error) {
       throw error;
     }
-
-    // Network or parsing error
     const apiError: ApiError = {
       message: error instanceof Error ? error.message : 'Network error occurred',
     };
-
     console.error('[API] Network error:', apiError);
     throw apiError;
   }
 }
 
-/**
- * API methods
- */
 export const apiClient = {
   get: <T>(endpoint: string, options?: RequestInit) =>
     apiFetch<T>(endpoint, { ...options, method: 'GET' }),
