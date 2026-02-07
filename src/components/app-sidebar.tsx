@@ -7,7 +7,6 @@ import {
 
 import { useAuth } from '@/auth/use-auth';
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -20,13 +19,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const documents = [
-  { name: 'Data Library', url: '#', icon: IconDatabase }
-];
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useAuth();
-  const navItems = [ { title: 'Dashboard', url: '/dashboard', icon: IconDashboard } ];
+  const navItems = [{ title: 'Dashboard', url: '/dashboard', icon: IconDashboard }];
   if (user?.role?.toLowerCase() === 'admin') navItems.push({ title: 'Users', url: '/dashboard/users', icon: IconDatabase });
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -49,10 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {isLoading ? (
           <div className="p-4 text-sm text-muted-foreground">Loading menu...</div>
         ) : (
-          <>
-            <NavMain items={navItems} />
-            <NavDocuments items={documents} />
-          </>
+          <NavMain items={navItems} />
         )}
       </SidebarContent>
       <SidebarFooter>
