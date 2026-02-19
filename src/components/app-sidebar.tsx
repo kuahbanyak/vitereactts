@@ -3,9 +3,11 @@ import {
   IconDashboard,
   IconDatabase,
   IconInnerShadowTop,
+  IconTicket,
 } from "@tabler/icons-react"
 
 import { useAuth } from '@/auth/use-auth';
+import { ROLE_NAMES } from '@/config/roles';
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -21,8 +23,11 @@ import {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useAuth();
-  const navItems = [{ title: 'Dashboard', url: '/dashboard', icon: IconDashboard }];
-  if (user?.role?.toLowerCase() === 'admin') navItems.push({ title: 'Users', url: '/dashboard/users', icon: IconDatabase });
+  const navItems = [
+    { title: 'Dashboard', url: '/dashboard', icon: IconDashboard },
+    { title: 'Queue', url: '/dashboard/queue', icon: IconTicket },
+  ];
+  if (user?.role?.toLowerCase() === ROLE_NAMES.ADMIN.toLowerCase()) navItems.push({ title: 'Users', url: '/dashboard/users', icon: IconDatabase });
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
