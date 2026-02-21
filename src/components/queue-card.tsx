@@ -1,8 +1,8 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { QueueStatusBadge } from './queue-status-badge';
 import type { WaitingListEntry } from '@/types/waiting-list.types';
-import { IconCar, IconUser, IconClock, IconCalendar, IconPhone } from '@tabler/icons-react';
+import { IconCar, IconUser, IconClock, IconCalendar, IconPhone, IconTool } from '@tabler/icons-react';
 import { hasRole, type User } from '@/auth/types';
 import { ROLE_NAMES } from '@/config/roles';
 
@@ -21,6 +21,9 @@ interface QueueCardProps {
     estimatedWait?: number;
 }
 
+const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
 export function QueueCard({
     queue,
     currentUser,
@@ -37,162 +40,114 @@ export function QueueCard({
 }: QueueCardProps) {
     const isAdmin = currentUser && hasRole(currentUser, ROLE_NAMES.ADMIN);
     const isMechanic = currentUser && hasRole(currentUser, ROLE_NAMES.MECHANIC);
-    const isAdminOrMechanic = isAdmin || isMechanic;
+    const isAdminOrMech = isAdmin || isMechanic;
     const isCustomer = currentUser && hasRole(currentUser, ROLE_NAMES.CUSTOMER);
 
     const canCancel = isCustomer && (queue.status === 'waiting' || queue.status === 'called');
-    const canCall = isAdminOrMechanic && queue.status === 'waiting';
-    const canStart = isAdminOrMechanic && queue.status === 'called';
-    const canComplete = isAdminOrMechanic && queue.status === 'in_service';
+    const canCall = isAdminOrMech && queue.status === 'waiting';
+    const canStart = isAdminOrMech && queue.status === 'called';
+    const canComplete = isAdminOrMech && queue.status === 'in_service';
     const canAssign = isMechanic && !queue.mechanic_id;
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
+    const isDone = queue.status === 'completed' || queue.status === 'cancelled' || queue.status === 'no_show';
 
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                            <span className="text-xl font-bold text-primary">#{queue.queue_number}</span>
+        <Card className={`border-0 shadow-sm transition-colors ${isDone ? 'opacity-75' : ''}`}>
+            <CardContent className="p-0">
+                {/* ── Main row ─────────────────────────────────────── */}
+                <div className="flex items-start gap-3 p-4">
+                    {/* Queue number bubble */}
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary text-sm">
+                        #{queue.queue_number}
+                    </div>
+
+                    {/* Middle info */}
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                        {/* Title row */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-semibold truncate">{queue.service_type}</span>
+                            <QueueStatusBadge status={queue.status} />
                         </div>
-                        <div>
-                            <CardTitle className="text-lg">{queue.service_type}</CardTitle>
-                            <CardDescription className="flex items-center gap-1">
-                                <IconCalendar size={14} />
+
+                        {/* Detail pills */}
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                                <IconCalendar size={12} />
                                 {formatDate(queue.service_date)}
-                            </CardDescription>
-                        </div>
-                    </div>
-                    <QueueStatusBadge status={queue.status} />
-                </div>
-            </CardHeader>
+                            </span>
 
-            <CardContent className="space-y-3">
-                {/* Vehicle Info */}
-                {queue.vehicle && (
-                    <div className="flex items-start gap-2 text-sm">
-                        <IconCar size={18} className="mt-0.5 text-muted-foreground" />
-                        <div>
-                            <p className="font-medium">
-                                {queue.vehicle.brand} {queue.vehicle.model} ({queue.vehicle.year})
+                            {queue.vehicle && (
+                                <span className="flex items-center gap-1">
+                                    <IconCar size={12} />
+                                    {queue.vehicle.brand} {queue.vehicle.model} · {queue.vehicle.license_plate}
+                                </span>
+                            )}
+
+                            {isAdminOrMech && queue.user_name && (
+                                <span className="flex items-center gap-1">
+                                    <IconUser size={12} />
+                                    {queue.user_name}
+                                    {queue.user_phone && <span>· {queue.user_phone}</span>}
+                                </span>
+                            )}
+
+                            {queue.mechanic_name && (
+                                <span className="flex items-center gap-1">
+                                    <IconTool size={12} />
+                                    {queue.mechanic_name}
+                                </span>
+                            )}
+
+                            {showProgress && position !== undefined && (
+                                <span className="flex items-center gap-1">
+                                    <IconClock size={12} />
+                                    Position #{position}
+                                    {estimatedWait && estimatedWait > 0 && ` · ~${estimatedWait}m wait`}
+                                </span>
+                            )}
+
+                            {queue.estimated_time && queue.estimated_time > 0 && (
+                                <span className="flex items-center gap-1">
+                                    <IconClock size={12} />
+                                    ~{queue.estimated_time}m service
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Notes (compact) */}
+                        {queue.notes && (
+                            <p className="text-xs text-muted-foreground bg-muted/60 rounded px-2 py-1 truncate">
+                                📝 {queue.notes}
                             </p>
-                            <p className="text-muted-foreground">{queue.vehicle.license_plate}</p>
+                        )}
+                        {queue.mechanic_notes && (
+                            <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 rounded px-2 py-1 truncate">
+                                🔧 {queue.mechanic_notes}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                {/* ── Action row (only if there are actions) ──────── */}
+                {(canCancel || canCall || canStart || canComplete || canAssign ||
+                    (isAdminOrMech && onNoShow && queue.status !== 'no_show' && queue.status !== 'completed') ||
+                    (isAdminOrMech && onUpdate && queue.mechanic_id)
+                ) && (
+                        <div className="flex flex-wrap gap-1.5 border-t border-border/60 px-4 py-2.5">
+                            {canCancel && onCancel && <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={() => onCancel(queue.id)}>Cancel</Button>}
+                            {canAssign && onAssign && <Button variant="default" size="sm" className="h-7 text-xs" onClick={() => onAssign(queue.id)}>Assign to Me</Button>}
+                            {canCall && onCall && <Button variant="default" size="sm" className="h-7 text-xs" onClick={() => onCall(queue.id)}>Call Customer</Button>}
+                            {canStart && onStart && <Button variant="default" size="sm" className="h-7 text-xs" onClick={() => onStart(queue.id)}>Start Service</Button>}
+                            {canComplete && onComplete && <Button variant="default" size="sm" className="h-7 text-xs" onClick={() => onComplete(queue.id)}>Complete</Button>}
+                            {isAdminOrMech && onNoShow && queue.status !== 'no_show' && queue.status !== 'completed' &&
+                                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => onNoShow(queue.id)}>No Show</Button>
+                            }
+                            {isAdminOrMech && onUpdate && queue.mechanic_id &&
+                                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => onUpdate(queue.id)}>Update</Button>
+                            }
                         </div>
-                    </div>
-                )}
-
-                {/* Customer Info (for admin/mechanic) */}
-                {isAdminOrMechanic && queue.user_name && (
-                    <div className="flex items-start gap-2 text-sm">
-                        <IconUser size={18} className="mt-0.5 text-muted-foreground" />
-                        <div>
-                            <p className="font-medium">{queue.user_name}</p>
-                            {queue.user_phone && (
-                                <p className="text-muted-foreground flex items-center gap-1">
-                                    <IconPhone size={14} />
-                                    {queue.user_phone}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Mechanic Info */}
-                {queue.mechanic_name && (
-                    <div className="flex items-start gap-2 text-sm">
-                        <IconUser size={18} className="mt-0.5 text-muted-foreground" />
-                        <div>
-                            <p className="text-muted-foreground">Mechanic</p>
-                            <p className="font-medium">{queue.mechanic_name}</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Progress Info */}
-                {showProgress && position !== undefined && (
-                    <div className="flex items-start gap-2 text-sm">
-                        <IconClock size={18} className="mt-0.5 text-muted-foreground" />
-                        <div>
-                            <p className="font-medium">Position: #{position}</p>
-                            {estimatedWait !== undefined && estimatedWait > 0 && (
-                                <p className="text-muted-foreground">Est. wait: ~{estimatedWait} min</p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Estimated Time */}
-                {queue.estimated_time && queue.estimated_time > 0 && (
-                    <div className="flex items-start gap-2 text-sm">
-                        <IconClock size={18} className="mt-0.5 text-muted-foreground" />
-                        <div>
-                            <p className="text-muted-foreground">Service Duration</p>
-                            <p className="font-medium">~{queue.estimated_time} minutes</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Notes */}
-                {queue.notes && (
-                    <div className="rounded-md bg-muted p-2 text-sm">
-                        <p className="font-medium">Notes:</p>
-                        <p className="text-muted-foreground">{queue.notes}</p>
-                    </div>
-                )}
-
-                {/* Mechanic Notes */}
-                {queue.mechanic_notes && (
-                    <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-2 text-sm">
-                        <p className="font-medium">Mechanic Notes:</p>
-                        <p className="text-muted-foreground">{queue.mechanic_notes}</p>
-                    </div>
-                )}
+                    )}
             </CardContent>
-
-            <CardFooter className="flex flex-wrap gap-2">
-                {canCancel && onCancel && (
-                    <Button variant="destructive" size="sm" onClick={() => onCancel(queue.id)}>
-                        Cancel
-                    </Button>
-                )}
-                {canAssign && onAssign && (
-                    <Button variant="default" size="sm" onClick={() => onAssign(queue.id)}>
-                        Assign to Me
-                    </Button>
-                )}
-                {canCall && onCall && (
-                    <Button variant="default" size="sm" onClick={() => onCall(queue.id)}>
-                        Call Customer
-                    </Button>
-                )}
-                {canStart && onStart && (
-                    <Button variant="default" size="sm" onClick={() => onStart(queue.id)}>
-                        Start Service
-                    </Button>
-                )}
-                {canComplete && onComplete && (
-                    <Button variant="default" size="sm" onClick={() => onComplete(queue.id)}>
-                        Complete
-                    </Button>
-                )}
-                {isAdminOrMechanic && onNoShow && queue.status !== 'no_show' && queue.status !== 'completed' && (
-                    <Button variant="outline" size="sm" onClick={() => onNoShow(queue.id)}>
-                        No Show
-                    </Button>
-                )}
-                {isAdminOrMechanic && onUpdate && queue.mechanic_id && (
-                    <Button variant="outline" size="sm" onClick={() => onUpdate(queue.id)}>
-                        Update
-                    </Button>
-                )}
-            </CardFooter>
         </Card>
     );
 }

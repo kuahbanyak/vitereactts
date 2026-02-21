@@ -3,9 +3,10 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { QueueCard } from '@/components/queue-card';
 import { QueueTicketForm } from '@/components/queue-ticket-form';
 import { QueueProgressTracker } from '@/components/queue-progress-tracker';
@@ -16,7 +17,10 @@ import { hasRole } from '@/auth/types';
 import { ROLE_NAMES } from '@/config/roles';
 import { waitingListService } from '@/services/waiting-list.service';
 import type { WaitingListEntry, ServiceProgress, QueueSummary } from '@/types/waiting-list.types';
-import { IconPlus, IconRefresh, IconCalendar } from '@tabler/icons-react';
+import {
+    IconPlus, IconRefresh, IconCalendar, IconTicket,
+    IconUsers, IconTool, IconCircleCheck, IconChevronDown,
+} from '@tabler/icons-react';
 import { toast } from 'sonner';
 
 export function QueuePage() {
@@ -27,6 +31,7 @@ export function QueuePage() {
     const [showTicketForm, setShowTicketForm] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [summary, setSummary] = useState<QueueSummary | null>(null);
+    const [showHistory, setShowHistory] = useState(false);
 
     // Update dialog
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
@@ -39,34 +44,23 @@ export function QueuePage() {
     const isCustomer = user && hasRole(user, ROLE_NAMES.CUSTOMER);
     const isAdminOrMechanic = isAdmin || isMechanic;
 
-    useEffect(() => {
-        loadQueues();
-    }, [selectedDate, user]);
+    useEffect(() => { loadQueues(); }, [selectedDate, user]);
 
     const loadQueues = async () => {
         if (!user) return;
-
         setLoading(true);
         try {
             let queueData: WaitingListEntry[] = [];
-
             if (isCustomer) {
-                // Customer sees only their own queues
                 queueData = await waitingListService.getMyQueue();
             } else if (isAdminOrMechanic) {
-                // Admin/Mechanic see all queues for selected date
-                if (selectedDate === new Date().toISOString().split('T')[0]) {
-                    queueData = await waitingListService.getTodayQueue();
-                } else {
-                    queueData = await waitingListService.getQueueByDate(selectedDate);
-                }
+                // Use admin/mechanic endpoint which returns ALL customers' tickets
+                queueData = await waitingListService.getAdminQueueForDate(selectedDate);
             }
-
             setQueues(queueData);
 
-            // Calculate summary
             if (isAdminOrMechanic) {
-                const summaryData: QueueSummary = {
+                setSummary({
                     total: queueData.length,
                     waiting: queueData.filter(q => q.status === 'waiting').length,
                     called: queueData.filter(q => q.status === 'called').length,
@@ -74,14 +68,10 @@ export function QueuePage() {
                     completed: queueData.filter(q => q.status === 'completed').length,
                     cancelled: queueData.filter(q => q.status === 'cancelled').length,
                     no_show: queueData.filter(q => q.status === 'no_show').length,
-                };
-                setSummary(summaryData);
+                });
             }
-
-            // Load progress for each queue
             await loadProgress(queueData);
-        } catch (error) {
-            console.error('Failed to load queues:', error);
+        } catch {
             toast.error('Failed to load queue data');
         } finally {
             setLoading(false);
@@ -90,294 +80,191 @@ export function QueuePage() {
 
     const loadProgress = async (queueData: WaitingListEntry[]) => {
         const progressData: Record<string, ServiceProgress> = {};
-
         for (const queue of queueData) {
-            try {
-                const progress = await waitingListService.getQueueProgress(queue.id);
-                progressData[queue.id] = progress;
-            } catch (error) {
-                console.error(`Failed to load progress for queue ${queue.id}:`, error);
-            }
+            try { progressData[queue.id] = await waitingListService.getQueueProgress(queue.id); }
+            catch { /* skip */ }
         }
-
         setProgressMap(progressData);
     };
 
-    const handleCancel = async (id: string) => {
-        if (!confirm('Are you sure you want to cancel this queue ticket?')) return;
-
-        console.log('[QueuePage] Cancelling queue:', id);
-        setLoading(true);
-        try {
-            await waitingListService.cancelQueue(id);
-            console.log('[QueuePage] Cancel successful, reloading queues...');
-            await loadQueues();
-            console.log('[QueuePage] Queues reloaded');
-        } catch (error) {
-            console.error('[QueuePage] Failed to cancel queue:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleCall = async (id: string) => {
-        try {
-            await waitingListService.callCustomer(id);
-            loadQueues();
-        } catch (error) {
-            console.error('Failed to call customer:', error);
-        }
-    };
-
-    const handleStart = async (id: string) => {
-        try {
-            await waitingListService.startService(id);
-            loadQueues();
-        } catch (error) {
-            console.error('Failed to start service:', error);
-        }
-    };
-
-    const handleComplete = async (id: string) => {
-        try {
-            await waitingListService.completeService(id);
-            loadQueues();
-        } catch (error) {
-            console.error('Failed to complete service:', error);
-        }
-    };
-
-    const handleNoShow = async (id: string) => {
-        if (!confirm('Mark this customer as no-show?')) return;
-
-        try {
-            await waitingListService.markNoShow(id);
-            loadQueues();
-        } catch (error) {
-            console.error('Failed to mark as no show:', error);
-        }
-    };
-
-    const handleAssign = async (id: string) => {
-        try {
-            await waitingListService.assignMechanic({ queue_id: id });
-            loadQueues();
-        } catch (error) {
-            console.error('Failed to assign mechanic:', error);
-        }
-    };
-
+    const handleCancel = async (id: string) => { if (!confirm('Cancel this ticket?')) return; setLoading(true); try { await waitingListService.cancelQueue(id); await loadQueues(); } catch { /* handled */ } finally { setLoading(false); } };
+    const handleCall = async (id: string) => { try { await waitingListService.callCustomer(id); loadQueues(); } catch { /* handled */ } };
+    const handleStart = async (id: string) => { try { await waitingListService.startService(id); loadQueues(); } catch { /* handled */ } };
+    const handleComplete = async (id: string) => { try { await waitingListService.completeService(id); loadQueues(); } catch { /* handled */ } };
+    const handleNoShow = async (id: string) => { if (!confirm('Mark as no-show?')) return; try { await waitingListService.markNoShow(id); loadQueues(); } catch { /* handled */ } };
+    const handleAssign = async (id: string) => { try { await waitingListService.assignMechanic({ queue_id: id }); loadQueues(); } catch { /* handled */ } };
     const handleUpdate = (id: string) => {
-        const queue = queues.find(q => q.id === id);
-        if (queue) {
-            setUpdateQueueId(id);
-            setEstimatedTime(queue.estimated_time?.toString() || '');
-            setMechanicNotes(queue.mechanic_notes || '');
-            setShowUpdateDialog(true);
-        }
+        const q = queues.find(x => x.id === id);
+        if (q) { setUpdateQueueId(id); setEstimatedTime(q.estimated_time?.toString() || ''); setMechanicNotes(q.mechanic_notes || ''); setShowUpdateDialog(true); }
     };
-
     const submitUpdate = async () => {
-        try {
-            await waitingListService.updateQueueEstimate(updateQueueId, {
-                estimated_time: estimatedTime ? parseInt(estimatedTime) : undefined,
-                mechanic_notes: mechanicNotes || undefined,
-            });
-            setShowUpdateDialog(false);
-            loadQueues();
-        } catch (error) {
-            console.error('Failed to update queue:', error);
-        }
+        try { await waitingListService.updateQueueEstimate(updateQueueId, { estimated_time: estimatedTime ? parseInt(estimatedTime) : undefined, mechanic_notes: mechanicNotes || undefined }); setShowUpdateDialog(false); loadQueues(); }
+        catch { /* handled */ }
     };
 
-    const activeQueues = queues.filter(q =>
-        q.status !== 'completed' && q.status !== 'cancelled' && q.status !== 'no_show'
-    );
+    const activeQueues = queues.filter(q => q.status !== 'completed' && q.status !== 'cancelled' && q.status !== 'no_show');
+    const doneQueues = queues.filter(q => q.status === 'completed' || q.status === 'cancelled' || q.status === 'no_show');
 
     return (
-        <SidebarProvider
-            style={{
-                '--sidebar-width': 'calc(var(--spacing) * 72)',
-                '--header-height': 'calc(var(--spacing) * 12)',
-            } as React.CSSProperties}
-        >
+        <SidebarProvider style={{ '--sidebar-width': 'calc(var(--spacing) * 72)', '--header-height': 'calc(var(--spacing) * 12)' } as React.CSSProperties}>
             <AppSidebar variant="inset" />
             <SidebarInset>
                 <SiteHeader title="Queue Management" />
 
-                <div className="flex flex-1 flex-col">
-                    <div className="@container/main flex flex-1 flex-col gap-2">
-                        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+                <div className="flex flex-col gap-4 p-4 lg:p-6">
 
-                            {/* Header Actions */}
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    {isAdminOrMechanic && (
-                                        <div className="flex items-center gap-2">
-                                            <Label htmlFor="date" className="text-sm">Date:</Label>
-                                            <Input
-                                                id="date"
-                                                type="date"
-                                                value={selectedDate}
-                                                onChange={(e) => setSelectedDate(e.target.value)}
-                                                className="w-auto"
-                                            />
-                                        </div>
-                                    )}
-                                    <Button variant="outline" size="sm" onClick={loadQueues} disabled={loading}>
-                                        <IconRefresh size={16} className={loading ? 'animate-spin' : ''} />
-                                        Refresh
-                                    </Button>
-                                </div>
-
-                                {isCustomer && (
-                                    <Button onClick={() => setShowTicketForm(true)}>
-                                        <IconPlus size={18} />
-                                        Take Queue
-                                    </Button>
-                                )}
-                            </div>
-
-                            {/* Summary Cards (Admin/Mechanic Only) */}
-                            {isAdminOrMechanic && summary && (
-                                <div className="grid gap-4 md:grid-cols-4">
-                                    <Card>
-                                        <CardHeader className="pb-2">
-                                            <CardDescription>Total Queues</CardDescription>
-                                            <CardTitle className="text-3xl">{summary.total}</CardTitle>
-                                        </CardHeader>
-                                    </Card>
-                                    <Card>
-                                        <CardHeader className="pb-2">
-                                            <CardDescription>Waiting</CardDescription>
-                                            <CardTitle className="text-3xl text-yellow-600">{summary.waiting}</CardTitle>
-                                        </CardHeader>
-                                    </Card>
-                                    <Card>
-                                        <CardHeader className="pb-2">
-                                            <CardDescription>In Service</CardDescription>
-                                            <CardTitle className="text-3xl text-blue-600">{summary.in_service}</CardTitle>
-                                        </CardHeader>
-                                    </Card>
-                                    <Card>
-                                        <CardHeader className="pb-2">
-                                            <CardDescription>Completed</CardDescription>
-                                            <CardTitle className="text-3xl text-green-600">{summary.completed}</CardTitle>
-                                        </CardHeader>
-                                    </Card>
+                    {/* ── Top bar ─────────────────────────────────────── */}
+                    <div className="flex flex-wrap items-center gap-2 justify-between">
+                        <div className="flex items-center gap-2">
+                            {isAdminOrMechanic && (
+                                <div className="flex items-center gap-1.5 rounded-lg border bg-background px-2.5 py-1.5">
+                                    <IconCalendar size={14} className="text-muted-foreground" />
+                                    <input
+                                        type="date"
+                                        value={selectedDate}
+                                        onChange={e => setSelectedDate(e.target.value)}
+                                        className="border-0 bg-transparent text-sm focus:outline-none"
+                                    />
                                 </div>
                             )}
-
-                            {/* Queue List */}
-                            {loading ? (
-                                <div className="flex items-center justify-center py-12">
-                                    <p className="text-muted-foreground">Loading queues...</p>
-                                </div>
-                            ) : activeQueues.length === 0 ? (
-                                <Card>
-                                    <CardContent className="flex flex-col items-center justify-center py-12">
-                                        <IconCalendar size={48} className="text-muted-foreground mb-4" />
-                                        <p className="text-lg font-medium">No active queues</p>
-                                        <p className="text-sm text-muted-foreground">
-                                            {isCustomer ? 'Take a queue ticket to get started' : 'No queues for selected date'}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            ) : (
-                                <div className="flex flex-col gap-4">
-                                    {activeQueues.map((queue) => {
-                                        const progress = progressMap[queue.id];
-                                        return (
-                                            <div key={queue.id} className="space-y-4">
-                                                <QueueCard
-                                                    queue={queue}
-                                                    currentUser={user}
-                                                    onCancel={handleCancel}
-                                                    onCall={handleCall}
-                                                    onStart={handleStart}
-                                                    onComplete={handleComplete}
-                                                    onNoShow={handleNoShow}
-                                                    onAssign={handleAssign}
-                                                    onUpdate={handleUpdate}
-                                                    showProgress={isCustomer}
-                                                    position={progress?.position_in_queue}
-                                                    estimatedWait={progress?.estimated_wait_time}
-                                                />
-                                                {isCustomer && progress && (
-                                                    <QueueProgressTracker progress={progress} />
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {/* Completed/Cancelled Queues (collapsed) */}
-                            {queues.some(q =>
-                                q.status === 'completed' || q.status === 'cancelled' || q.status === 'no_show'
-                            ) && (
-                                    <details className="mt-4">
-                                        <summary className="cursor-pointer text-sm font-medium text-muted-foreground">
-                                            View Completed/Cancelled ({queues.filter(q =>
-                                                q.status === 'completed' || q.status === 'cancelled' || q.status === 'no_show'
-                                            ).length})
-                                        </summary>
-                                        <div className="grid gap-4 md:grid-cols-2 mt-4">
-                                            {queues
-                                                .filter(q => q.status === 'completed' || q.status === 'cancelled' || q.status === 'no_show')
-                                                .map((queue) => (
-                                                    <QueueCard
-                                                        key={queue.id}
-                                                        queue={queue}
-                                                        currentUser={user}
-                                                    />
-                                                ))}
-                                        </div>
-                                    </details>
-                                )}
+                            <Button variant="outline" size="sm" onClick={loadQueues} disabled={loading} className="h-8 gap-1.5">
+                                <IconRefresh size={14} className={loading ? 'animate-spin' : ''} />
+                                Refresh
+                            </Button>
                         </div>
+                        {isCustomer && (
+                            <Button size="sm" onClick={() => setShowTicketForm(true)} className="h-8 gap-1.5">
+                                <IconPlus size={14} /> Take Queue
+                            </Button>
+                        )}
                     </div>
+
+                    {/* ── Compact stat strip (Admin/Mechanic) ─────────── */}
+                    {isAdminOrMechanic && summary && (
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { label: 'Total', value: summary.total, icon: IconTicket, cls: '' },
+                                { label: 'Waiting', value: summary.waiting, icon: IconUsers, cls: 'text-amber-600 dark:text-amber-400' },
+                                { label: 'Called', value: summary.called, icon: IconUsers, cls: 'text-blue-600 dark:text-blue-400' },
+                                { label: 'In Service', value: summary.in_service, icon: IconTool, cls: 'text-purple-600 dark:text-purple-400' },
+                                { label: 'Completed', value: summary.completed, icon: IconCircleCheck, cls: 'text-green-600 dark:text-green-400' },
+                            ].map(s => (
+                                <div key={s.label} className="flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs shadow-sm">
+                                    <s.icon size={12} className={s.cls} />
+                                    <span className={`font-bold tabular-nums ${s.cls}`}>{s.value}</span>
+                                    <span className="text-muted-foreground">{s.label}</span>
+                                </div>
+                            ))}
+                            <Badge variant="outline" className="gap-1 rounded-full text-xs">
+                                <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+                                Live
+                            </Badge>
+                        </div>
+                    )}
+
+                    {/* ── Active Queue List ───────────────────────────── */}
+                    {loading ? (
+                        <div className="flex items-center justify-center py-16">
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                <IconRefresh size={20} className="animate-spin" />
+                                <p className="text-sm">Loading queues...</p>
+                            </div>
+                        </div>
+                    ) : activeQueues.length === 0 ? (
+                        <Card className="border-0 shadow-sm">
+                            <CardContent className="flex flex-col items-center justify-center py-14 gap-3">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+                                    <IconCalendar size={28} className="text-muted-foreground" />
+                                </div>
+                                <div className="text-center">
+                                    <p className="font-semibold">No active queues</p>
+                                    <p className="text-sm text-muted-foreground mt-0.5">
+                                        {isCustomer ? 'Take a queue ticket to get started' : 'No queues for the selected date'}
+                                    </p>
+                                </div>
+                                {isCustomer && (
+                                    <Button size="sm" onClick={() => setShowTicketForm(true)} className="gap-1.5 mt-1">
+                                        <IconPlus size={14} /> Book a Service
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        /* Admin: 2-col grid on large. Customer: single col */
+                        <div className={isAdminOrMechanic ? 'grid gap-2 md:grid-cols-2' : 'flex flex-col gap-2'}>
+                            {activeQueues.map(queue => (
+                                <div key={queue.id} className="flex flex-col gap-2">
+                                    <QueueCard
+                                        queue={queue}
+                                        currentUser={user}
+                                        onCancel={handleCancel}
+                                        onCall={handleCall}
+                                        onStart={handleStart}
+                                        onComplete={handleComplete}
+                                        onNoShow={handleNoShow}
+                                        onAssign={handleAssign}
+                                        onUpdate={handleUpdate}
+                                        showProgress={!!isCustomer}
+                                        position={progressMap[queue.id]?.position_in_queue}
+                                        estimatedWait={progressMap[queue.id]?.estimated_wait_time}
+                                    />
+                                    {isCustomer && progressMap[queue.id] && (
+                                        <QueueProgressTracker progress={progressMap[queue.id]} />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* ── History section (collapsible) ──────────────── */}
+                    {doneQueues.length > 0 && (
+                        <div className="rounded-xl border-0 shadow-sm bg-card overflow-hidden">
+                            <button
+                                className="flex w-full items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
+                                onClick={() => setShowHistory(v => !v)}
+                            >
+                                <span className="text-sm font-medium text-muted-foreground">
+                                    History · {doneQueues.length} ticket{doneQueues.length !== 1 ? 's' : ''}
+                                </span>
+                                <IconChevronDown
+                                    size={15}
+                                    className={`text-muted-foreground transition-transform duration-300 ${showHistory ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+                            {showHistory && (
+                                <div className={`p-2 grid gap-2 ${isAdminOrMechanic ? 'md:grid-cols-2' : ''} border-t border-border/50`}>
+                                    {doneQueues.map(queue => (
+                                        <QueueCard key={queue.id} queue={queue} currentUser={user} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </SidebarInset>
 
-            {/* Queue Ticket Form Dialog */}
-            <QueueTicketForm
-                open={showTicketForm}
-                onOpenChange={setShowTicketForm}
-                onSuccess={loadQueues}
-            />
+            {/* Dialogs */}
+            <QueueTicketForm open={showTicketForm} onOpenChange={setShowTicketForm} onSuccess={loadQueues} />
 
-            {/* Update Queue Dialog */}
             <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Update Queue</DialogTitle>
-                        <DialogDescription>Update estimated time and mechanic notes</DialogDescription>
+                        <DialogTitle>Update Queue Ticket</DialogTitle>
+                        <DialogDescription>Set estimated time and add mechanic notes</DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-3 py-1">
                         <div>
-                            <Label htmlFor="estimated_time">Estimated Time (minutes)</Label>
-                            <Input
-                                id="estimated_time"
-                                type="number"
-                                value={estimatedTime}
-                                onChange={(e) => setEstimatedTime(e.target.value)}
-                                min="0"
-                            />
+                            <Label htmlFor="estimated_time" className="text-sm">Estimated Time (minutes)</Label>
+                            <Input id="estimated_time" type="number" value={estimatedTime} onChange={e => setEstimatedTime(e.target.value)} min="0" className="mt-1.5" />
                         </div>
                         <div>
-                            <Label htmlFor="mechanic_notes">Mechanic Notes</Label>
-                            <Textarea
-                                id="mechanic_notes"
-                                value={mechanicNotes}
-                                onChange={(e) => setMechanicNotes(e.target.value)}
-                                rows={4}
-                            />
+                            <Label htmlFor="mechanic_notes" className="text-sm">Mechanic Notes</Label>
+                            <Textarea id="mechanic_notes" value={mechanicNotes} onChange={e => setMechanicNotes(e.target.value)} rows={3} className="mt-1.5" />
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowUpdateDialog(false)}>Cancel</Button>
-                        <Button onClick={submitUpdate}>Update</Button>
+                        <Button variant="outline" size="sm" onClick={() => setShowUpdateDialog(false)}>Cancel</Button>
+                        <Button size="sm" onClick={submitUpdate}>Save Changes</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

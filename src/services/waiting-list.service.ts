@@ -9,7 +9,9 @@ import type {
     UpdateQueuePayload,
     AssignMechanicPayload,
     QueueAvailability,
+    AdminTicketCount,
     Vehicle,
+    ServiceItem,
 } from '@/types/waiting-list.types';
 
 export interface ApiResponse<T> {
@@ -170,6 +172,37 @@ export const waitingListService = {
     },
 
     /**
+     * Get all customers' queue entries as WaitingListEntry[] for a given date (Admin/Mechanic only).
+     * Uses the mechanic/admin progress endpoint and maps results back to WaitingListEntry shape
+     * so existing components (QueueCard, etc.) work without modification.
+     */
+    async getAdminQueueForDate(date?: string): Promise<WaitingListEntry[]> {
+        const progressList = await this.getAllProgress(date);
+        // Map ServiceProgress → WaitingListEntry (fields common to both types)
+        return progressList.map(p => ({
+            id: p.queue_id,
+            user_id: (p as any).user_id ?? '',
+            vehicle_id: (p as any).vehicle_id ?? '',
+            queue_number: p.queue_number,
+            service_type: p.service_type,
+            service_date: p.service_date,
+            status: p.status,
+            notes: (p as any).notes,
+            estimated_time: (p as any).estimated_time,
+            mechanic_notes: p.mechanic_notes,
+            mechanic_id: (p as any).mechanic_id,
+            mechanic_name: p.mechanic_name,
+            created_at: p.created_at,
+            updated_at: p.updated_at,
+            // Extended fields exposed by the admin/mechanic progress endpoint
+            user_name: (p as any).user_name,
+            user_email: (p as any).user_email,
+            user_phone: (p as any).user_phone,
+            vehicle: (p as any).vehicle,
+        }));
+    },
+
+    /**
      * Get available queues (Mechanic only)
      */
     async getAvailableQueues(date?: string): Promise<WaitingListEntry[]> {
@@ -270,6 +303,36 @@ export const waitingListService = {
             throw error;
         }
     },
+
+    /**
+     * Get system-wide weekly ticket count stats (Admin only)
+     */
+    async getAdminTicketCount(): Promise<AdminTicketCount> {
+        try {
+            const response = await apiClient.get<ApiResponse<AdminTicketCount>>(
+                API_ENDPOINTS.ADMIN.TICKET_COUNT
+            );
+            return response.data;
+        } catch (error) {
+            toast.error('Failed to fetch ticket count');
+            throw error;
+        }
+    },
+
+    /**
+     * Get ticket count stats for the authenticated customer
+     */
+    async getMyTicketCount(): Promise<AdminTicketCount> {
+        try {
+            const response = await apiClient.get<ApiResponse<AdminTicketCount>>(
+                API_ENDPOINTS.WAITING_LIST.MY_TICKET_COUNT
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch my ticket count:', error);
+            throw error;
+        }
+    },
 };
 
 /**
@@ -288,6 +351,26 @@ export const vehicleService = {
         } catch (error) {
             console.error('Failed to fetch vehicles:', error);
             throw error;
+        }
+    },
+};
+
+/**
+ * Service Items for autocomplete in queue form
+ */
+export const serviceItemService = {
+    async getServiceItems(): Promise<ServiceItem[]> {
+        try {
+            const response = await apiClient.get<ApiResponse<ServiceItem[]>>(
+                API_ENDPOINTS.SERVICE_ITEMS.BASE
+            );
+            if (Array.isArray(response.data)) {
+                return response.data;
+            }
+            return (response.data as any).data || [];
+        } catch (error) {
+            console.error('Failed to fetch service items:', error);
+            return []; // Return empty array instead of throwing to not break the form
         }
     },
 };

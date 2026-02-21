@@ -32,6 +32,12 @@ export const API_ENDPOINTS = {
     PROGRESS: (id: string) => `/api/v1/waiting-list/${id}/progress`,
     CANCEL: (id: string) => `/api/v1/waiting-list/${id}/cancel`,
     AVAILABILITY: '/api/v1/waiting-list/availability',
+    MY_TICKET_COUNT: '/api/v1/waiting-list/my-ticket-count',
+  },
+  // Admin-only endpoints
+  ADMIN: {
+    TICKET_COUNT: '/api/v1/admin/waiting-list/ticket-count',
+    AVAILABILITY: '/api/v1/waiting-list/availability',
   },
   // Mechanic / Admin endpoints for queue management
   MECHANIC: {
@@ -48,6 +54,12 @@ export const API_ENDPOINTS = {
   VEHICLES: {
     BASE: '/api/v1/vehicles',
     BY_ID: (id: string) => `/api/v1/vehicles/${id}`,
+  },
+  // Service Item endpoints
+  SERVICE_ITEMS: {
+    BASE: '/api/v1/service-items',
+    GROUPED: '/api/v1/service-items/grouped',
+    BY_ID: (id: string) => `/api/v1/service-items/${id}`,
   },
 } as const;
 

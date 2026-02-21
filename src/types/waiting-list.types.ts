@@ -29,6 +29,18 @@ export interface NewVehicle {
     color?: string;
 }
 
+export interface ServiceItem {
+    id: string;
+    name: string;
+    description?: string;
+    category: string;
+    estimated_time: number;
+    estimated_cost: number;
+    display_order?: number;
+    requires_booking?: boolean;
+    is_active?: boolean;
+}
+
 export interface WaitingListEntry {
     id: string;
     user_id: string;
@@ -70,6 +82,7 @@ export interface ServiceProgress {
 export interface TakeQueuePayload {
     vehicle_id?: string;
     new_vehicle?: NewVehicle;
+    service_item_id?: string;
     service_type: string;
     service_date: string;
     notes?: string;
@@ -86,9 +99,24 @@ export interface AssignMechanicPayload {
 
 export interface QueueAvailability {
     date: string;
-    total_slots: number;
-    available_slots: number;
-    is_available: boolean;
+    week_start: string;
+    week_end: string;
+    available: boolean;
+    remaining_tickets: number;
+    max_tickets_per_week: number;
+    system_active: boolean;
+    accepting_bookings: boolean;
+    message: string;
+}
+
+export interface AdminTicketCount {
+    total: number;
+    active: number;
+    completed: number;
+    week_start?: string;
+    week_end?: string;
+    remaining?: number;
+    max_per_week?: number;
 }
 
 export interface QueueSummary {
