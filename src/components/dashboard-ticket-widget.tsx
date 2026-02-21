@@ -376,47 +376,54 @@ function CustomerTicketWidget({ userId }: { userId: string }) {
 // ── Admin / Mechanic Stats ───────────────────────────────────────────────────
 function StaffQueueWidget() {
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({ total: 0, waiting: 0, inService: 0, completed: 0 });
     const [weeklyCount, setWeeklyCount] = useState<AdminTicketCount | null>(null);
+    const [todayProgress, setTodayProgress] = useState<import('@/types/waiting-list.types').AllProgressItem[]>([]);
+    const [showAll, setShowAll] = useState(false);
+
+    const today = new Date().toISOString().split('T')[0];
 
     useEffect(() => {
         async function load() {
             try {
-                const today = new Date().toISOString().split('T')[0];
-                const [data, weekly] = await Promise.allSettled([
-                    // Use the admin/mechanic endpoint that returns ALL customers' tickets
-                    waitingListService.getAllProgress(today),
+                const [countResult, progressResult] = await Promise.allSettled([
                     waitingListService.getAdminTicketCount(),
+                    waitingListService.getAllProgress(today),
                 ]);
-                if (data.status === 'fulfilled') {
-                    setStats({
-                        total: data.value.length,
-                        waiting: data.value.filter(q => q.status === 'waiting').length,
-                        inService: data.value.filter(q => q.status === 'in_service' || q.status === 'called').length,
-                        completed: data.value.filter(q => q.status === 'completed').length,
-                    });
-                }
-                if (weekly.status === 'fulfilled') setWeeklyCount(weekly.value);
+                if (countResult.status === 'fulfilled') setWeeklyCount(countResult.value);
+                if (progressResult.status === 'fulfilled') setTodayProgress(progressResult.value);
             } catch { /* silent */ }
             finally { setLoading(false); }
         }
         load();
-    }, []);
+    }, [today]);
 
-    const items = [
-        { label: 'Total Today', value: stats.total, color: 'text-foreground', bg: 'bg-muted/60' },
-        { label: 'Waiting', value: stats.waiting, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-        { label: 'In Service', value: stats.inService, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-        { label: 'Completed', value: stats.completed, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20' },
-    ];
+    const items = weeklyCount ? [
+        { label: 'Total Tickets', value: weeklyCount.total_tickets, color: 'text-foreground', bg: 'bg-muted/60' },
+        { label: 'Active', value: weeklyCount.active_tickets, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+        { label: 'Completed', value: weeklyCount.completed_tickets, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20' },
+        { label: 'Cancelled', value: weeklyCount.canceled_tickets, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20' },
+        { label: 'Slots Left', value: weeklyCount.remaining_tickets, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    ] : [];
+
+    const STATUS_META: Record<string, { label: string; cls: string }> = {
+        waiting: { label: 'Waiting', cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
+        called: { label: 'Called', cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+        in_service: { label: 'In Service', cls: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
+        completed: { label: 'Completed', cls: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
+        canceled: { label: 'Cancelled', cls: 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300' },
+        cancelled: { label: 'Cancelled', cls: 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300' },
+        no_show: { label: 'No Show', cls: 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300' },
+    };
+
+    const visibleTickets = showAll ? todayProgress : todayProgress.slice(0, 5);
 
     return (
         <Card className="border-0 shadow-sm col-span-full">
             <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-4">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Live Queue</p>
-                        <h3 className="text-base font-bold">Today's Overview</h3>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Weekly System</p>
+                        <h3 className="text-base font-bold">Queue Overview</h3>
                     </div>
                     <Badge variant="outline" className="text-xs gap-1">
                         <span className="h-1.5 w-1.5 rounded-full bg-green-500 inline-block animate-pulse" />
@@ -429,7 +436,8 @@ function StaffQueueWidget() {
                     </div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {/* ── Ticket count stats grid ── */}
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                             {items.map(s => (
                                 <div key={s.label} className={`rounded-xl ${s.bg} px-4 py-3`}>
                                     <p className={`text-3xl font-extrabold tabular-nums ${s.color}`}>{s.value}</p>
@@ -438,34 +446,54 @@ function StaffQueueWidget() {
                             ))}
                         </div>
 
-                        {/* Weekly ticket availability */}
+                        {/* Status message from API */}
                         {weeklyCount !== null && (
-                            <div className="mt-3 flex items-center gap-2.5 rounded-lg border px-3 py-2.5">
-                                <IconCalendarStats size={16} className="text-primary shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-semibold text-foreground">
-                                        Weekly Ticket Capacity
-                                        {weeklyCount.week_start && weeklyCount.week_end && (
-                                            <span className="ml-1.5 font-normal text-muted-foreground">
-                                                ({new Date(weeklyCount.week_start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} –{' '}
-                                                {new Date(weeklyCount.week_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
-                                            </span>
-                                        )}
-                                    </p>
+                            <div className="mt-3 flex items-center gap-2 rounded-lg border px-3 py-2 text-xs text-muted-foreground">
+                                <IconCalendarStats size={14} className="text-primary shrink-0" />
+                                <span className="truncate">{weeklyCount.message}</span>
+                            </div>
+                        )}
+
+                        {/* ── Today's queue progress list ── */}
+                        {todayProgress.length > 0 && (
+                            <div className="mt-4">
+                                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                                    Today's Queue · {todayProgress.length} ticket{todayProgress.length !== 1 ? 's' : ''}
+                                </p>
+                                <div className="space-y-1">
+                                    {visibleTickets.map(ticket => {
+                                        const meta = STATUS_META[ticket.status] ?? { label: ticket.status, cls: 'bg-muted text-muted-foreground' };
+                                        return (
+                                            <div key={ticket.id} className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-muted/50 transition-colors">
+                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm tabular-nums">
+                                                    {ticket.queue_number}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium truncate">
+                                                        {ticket.customer_name ?? 'Customer'}
+                                                        {ticket.license_plate && (
+                                                            <span className="ml-1.5 text-xs text-muted-foreground font-normal">
+                                                                · {ticket.vehicle_brand} {ticket.vehicle_model} ({ticket.license_plate})
+                                                            </span>
+                                                        )}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground truncate">{ticket.service_type}</p>
+                                                </div>
+                                                <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${meta.cls}`}>
+                                                    {meta.label}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                {weeklyCount.remaining !== undefined && weeklyCount.max_per_week !== undefined ? (
-                                    <span className={`text-xs font-bold tabular-nums px-2 py-0.5 rounded-full ${weeklyCount.remaining > 5
-                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                                        : weeklyCount.remaining > 0
-                                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-                                            : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
-                                        }`}>
-                                        {weeklyCount.remaining} / {weeklyCount.max_per_week} left
-                                    </span>
-                                ) : (
-                                    <span className="text-xs font-bold tabular-nums px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                                        {weeklyCount.active} active · {weeklyCount.total} total
-                                    </span>
+                                {todayProgress.length > 5 && (
+                                    <button
+                                        className="mt-2 w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+                                        onClick={() => setShowAll(v => !v)}
+                                    >
+                                        <IconChevronDown size={13} className={`transition-transform duration-300 ${showAll ? 'rotate-180' : ''}`} />
+                                        {showAll ? 'Show less' : `Show ${todayProgress.length - 5} more`}
+                                    </button>
                                 )}
                             </div>
                         )}

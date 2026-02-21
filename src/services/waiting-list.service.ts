@@ -5,6 +5,7 @@ import { getErrorMessage } from '@/utils/helpers';
 import type {
     WaitingListEntry,
     ServiceProgress,
+    QueueStatus,
     TakeQueuePayload,
     UpdateQueuePayload,
     AssignMechanicPayload,
@@ -12,6 +13,8 @@ import type {
     AdminTicketCount,
     Vehicle,
     ServiceItem,
+    AllProgressItem,
+    AllProgressResponse,
 } from '@/types/waiting-list.types';
 
 export interface ApiResponse<T> {
@@ -153,18 +156,21 @@ export const waitingListService = {
 
     /**
      * Get all queue progress (Admin/Mechanic only)
+     * The endpoint returns: { data: { progress_list: [...], total_queues, date, currently_serving } }
      */
-    async getAllProgress(date?: string): Promise<ServiceProgress[]> {
+    async getAllProgress(date?: string): Promise<AllProgressItem[]> {
         try {
             const endpoint = date
                 ? `${API_ENDPOINTS.MECHANIC.ALL_PROGRESS}?date=${encodeURIComponent(date)}`
                 : API_ENDPOINTS.MECHANIC.ALL_PROGRESS;
 
-            const response = await apiClient.get<ApiResponse<ServiceProgress[]>>(endpoint);
-            if (Array.isArray(response.data)) {
-                return response.data;
-            }
-            return (response.data as any).data || [];
+            const response = await apiClient.get<ApiResponse<AllProgressResponse>>(endpoint);
+            // Response shape: { data: { progress_list: [...], ... } }
+            const body = response.data as any;
+            if (Array.isArray(body)) return body;
+            if (body?.progress_list) return body.progress_list;
+            if (body?.data?.progress_list) return body.data.progress_list;
+            return [];
         } catch (error) {
             toast.error(`Failed to fetch all progress`);
             throw error;
@@ -173,33 +179,62 @@ export const waitingListService = {
 
     /**
      * Get all customers' queue entries as WaitingListEntry[] for a given date (Admin/Mechanic only).
-     * Uses the mechanic/admin progress endpoint and maps results back to WaitingListEntry shape
-     * so existing components (QueueCard, etc.) work without modification.
+     * Primary source: getAllProgress() which returns all tickets for the date (all statuses).
+     * Falls back to merging with getAvailableQueues() in case any waiting tickets are missed.
      */
     async getAdminQueueForDate(date?: string): Promise<WaitingListEntry[]> {
-        const progressList = await this.getAllProgress(date);
-        // Map ServiceProgress → WaitingListEntry (fields common to both types)
-        return progressList.map(p => ({
-            id: p.queue_id,
-            user_id: (p as any).user_id ?? '',
-            vehicle_id: (p as any).vehicle_id ?? '',
-            queue_number: p.queue_number,
-            service_type: p.service_type,
-            service_date: p.service_date,
-            status: p.status,
-            notes: (p as any).notes,
-            estimated_time: (p as any).estimated_time,
-            mechanic_notes: p.mechanic_notes,
-            mechanic_id: (p as any).mechanic_id,
-            mechanic_name: p.mechanic_name,
-            created_at: p.created_at,
-            updated_at: p.updated_at,
-            // Extended fields exposed by the admin/mechanic progress endpoint
-            user_name: (p as any).user_name,
-            user_email: (p as any).user_email,
-            user_phone: (p as any).user_phone,
-            vehicle: (p as any).vehicle,
-        }));
+        const [availableResult, progressResult] = await Promise.allSettled([
+            this.getAvailableQueues(date),
+            this.getAllProgress(date),
+        ]);
+
+        const entries: WaitingListEntry[] = [];
+
+        // Map all-progress items to WaitingListEntry (covers all statuses including waiting & canceled)
+        if (progressResult.status === 'fulfilled') {
+            const mappedProgress = progressResult.value.map(p => ({
+                id: p.id,
+                user_id: '',
+                vehicle_id: '',
+                queue_number: p.queue_number,
+                service_type: p.service_type,
+                service_date: p.service_date,
+                status: (p.status === 'canceled' ? 'cancelled' : p.status) as QueueStatus,
+                notes: undefined,
+                estimated_time: p.estimated_time_minutes,
+                mechanic_notes: p.mechanic_notes,
+                mechanic_id: undefined,
+                mechanic_name: p.mechanic_name,
+                created_at: p.timeline?.queue_taken_at ?? '',
+                updated_at: p.timeline?.queue_taken_at ?? '',
+                user_name: p.customer_name,
+                user_email: undefined,
+                user_phone: p.customer_phone,
+                vehicle: p.vehicle_brand ? {
+                    id: '',
+                    brand: p.vehicle_brand,
+                    model: p.vehicle_model ?? '',
+                    year: 0,
+                    license_plate: p.license_plate ?? '',
+                } : undefined,
+            } as WaitingListEntry));
+            entries.push(...mappedProgress);
+        }
+
+        // Also include available-queues results (in case any waiting tickets weren't in progress/all)
+        if (availableResult.status === 'fulfilled') {
+            entries.push(...availableResult.value);
+        }
+
+        // Deduplicate (progress/all entries take priority) then sort by queue number
+        const seen = new Set<string>();
+        const deduped = entries.filter(e => {
+            if (seen.has(e.id)) return false;
+            seen.add(e.id);
+            return true;
+        });
+
+        return deduped.sort((a, b) => a.queue_number - b.queue_number);
     },
 
     /**

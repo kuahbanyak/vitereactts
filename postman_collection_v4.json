@@ -1,9 +1,9 @@
 {
 	"info": {
 		"name": "Go-CRUD API - Complete Collection",
-		"description": "Complete API collection with Health, Version, Auth, Users, Products (including stock management), Vehicles, Waiting List (with Queue Progress, Mechanic Assignment & Ticket Count), Service Items (predefined services with auto-pricing), Job Management & Scheduler Control, Invoices, Analytics, Roles & Pagination. Updated Feb 2026 with weekly ticket system, service items, mechanic assignment, and job scheduler with database-driven job management. Admin can create/manage scheduled jobs and control system activation.",
+		"description": "Complete API collection with Health, Version, Auth, Users, Products (including stock management), Vehicles, Waiting List (with Queue Progress, Mechanic Assignment, Detailed Ticket Count & Weekly Availability), Service Items (predefined services with auto-pricing), Job Management & Scheduler Control, Invoices, Analytics (with Visitor Statistics by Time Period & Service Category), Roles & Pagination. Updated Feb 2026 with weekly ticket system, service items, mechanic assignment, job scheduler with database-driven job management, and visitor analytics. Admin can create/manage scheduled jobs and control system activation.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"version": "4.7.0"
+		"version": "5.0.0"
 	},
 	"variable": [
 		{
@@ -78,12 +78,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/health",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"health"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
 						}
 					}
 				},
@@ -94,13 +90,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/health/live",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"health",
-								"live"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["health", "live"]
 						}
 					}
 				},
@@ -111,13 +102,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/health/ready",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"health",
-								"ready"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["health", "ready"]
 						}
 					}
 				},
@@ -134,13 +120,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/health/detail",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"health",
-								"detail"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["health", "detail"]
 						}
 					}
 				},
@@ -151,13 +132,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/version",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"version"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "version"]
 						}
 					}
 				}
@@ -200,15 +176,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/auth/register",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"register"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "register"]
 						}
 					}
 				},
@@ -246,15 +215,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/auth/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"login"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "login"]
 						}
 					}
 				},
@@ -289,15 +251,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/auth/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"login"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "login"]
 						}
 					}
 				}
@@ -319,15 +274,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/users/profile",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"profile"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "users", "profile"]
 						}
 					}
 				},
@@ -352,15 +300,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/users/profile",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"profile"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "users", "profile"]
 						},
 						"description": "Update own profile (all fields optional: name, phone, address, password)."
 					}
@@ -378,14 +319,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/users?page=1&page_size=10&search=&sort_by=created_at&sort_dir=desc&status=",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "users"],
 							"query": [
 								{
 									"key": "page",
@@ -435,15 +370,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/users/{{userId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"{{userId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "users", "{{userId}}"]
 						},
 						"description": "Get user details by ID. Requires admin role."
 					}
@@ -469,15 +397,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/users/{{userId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"{{userId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "users", "{{userId}}"]
 						},
 						"description": "Update user details (all fields optional: name, phone, address, password). Requires admin role."
 					}
@@ -495,15 +416,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/users/{{userId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"{{userId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "users", "{{userId}}"]
 						},
 						"description": "Delete user by ID. Requires admin role."
 					}
@@ -549,14 +463,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/vehicles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"vehicles"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles"]
 						}
 					}
 				},
@@ -573,14 +481,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/vehicles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"vehicles"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles"]
 						}
 					}
 				},
@@ -597,15 +499,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/vehicles/{{vehicleId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"vehicles",
-								"{{vehicleId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "{{vehicleId}}"]
 						}
 					}
 				},
@@ -630,15 +525,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/vehicles/{{vehicleId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"vehicles",
-								"{{vehicleId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "{{vehicleId}}"]
 						}
 					}
 				},
@@ -655,15 +543,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/vehicles/{{vehicleId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"vehicles",
-								"{{vehicleId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "{{vehicleId}}"]
 						}
 					}
 				},
@@ -680,15 +561,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/vehicles?page=1&page_size=10&search=&sort_by=created_at&sort_dir=desc",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"vehicles"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "vehicles"],
 							"query": [
 								{
 									"key": "page",
@@ -761,15 +635,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/take",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"take"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "take"]
 						},
 						"description": "Take queue with existing vehicle. Can optionally select a service_item_id to auto-populate estimated time and cost. EstimatedTime and cost will be filled from service item if selected."
 					}
@@ -813,15 +680,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/take",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"take"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "take"]
 						},
 						"description": "Take queue and create a new vehicle at the same time. Useful for first-time customers."
 					}
@@ -839,15 +699,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/my-queue",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"my-queue"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "my-queue"]
 						},
 						"description": "Get all queue entries for the authenticated user"
 					}
@@ -865,15 +718,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/my-ticket-count",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"my-ticket-count"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "my-ticket-count"]
 						},
 						"description": "Get ticket count statistics for the authenticated customer. Shows total tickets, active tickets (waiting/called/in_service), and completed tickets."
 					}
@@ -891,15 +737,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/today",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"today"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "today"]
 						},
 						"description": "Get all queue entries for today"
 					}
@@ -917,15 +756,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/date?date=2026-02-10",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"date"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "date"],
 							"query": [
 								{
 									"key": "date",
@@ -949,16 +781,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/number/5?date=2026-02-10",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"number",
-								"5"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "number", "5"],
 							"query": [
 								{
 									"key": "date",
@@ -982,15 +806,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/availability?date=2026-02-17",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"availability"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "availability"],
 							"query": [
 								{
 									"key": "date",
@@ -1015,15 +832,8 @@
 								],
 								"url": {
 									"raw": "{{baseUrl}}/api/v1/waiting-list/availability?date=2026-02-17",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"waiting-list",
-										"availability"
-									],
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "waiting-list", "availability"],
 									"query": [
 										{
 											"key": "date",
@@ -1056,15 +866,8 @@
 								],
 								"url": {
 									"raw": "{{baseUrl}}/api/v1/waiting-list/availability?date=2026-02-17",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"waiting-list",
-										"availability"
-									],
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "waiting-list", "availability"],
 									"query": [
 										{
 											"key": "date",
@@ -1097,15 +900,8 @@
 								],
 								"url": {
 									"raw": "{{baseUrl}}/api/v1/waiting-list/availability?date=2026-02-03",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"waiting-list",
-										"availability"
-									],
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "waiting-list", "availability"],
 									"query": [
 										{
 											"key": "date",
@@ -1141,16 +937,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/{{waitingListId}}/progress",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"{{waitingListId}}",
-								"progress"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "{{waitingListId}}", "progress"]
 						},
 						"description": "Get real-time progress of service including position in queue, estimated wait time, and status"
 					}
@@ -1168,16 +956,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/{{waitingListId}}/cancel",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"{{waitingListId}}",
-								"cancel"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "{{waitingListId}}", "cancel"]
 						},
 						"description": "Cancel your own queue ticket. When you cancel, your ticket is returned to the system and other customers behind you in the queue are automatically moved up. You can only cancel your own tickets (verified by customer ID). Cannot cancel tickets that are already completed or already cancelled."
 					},
@@ -1195,16 +975,8 @@
 								],
 								"url": {
 									"raw": "{{baseUrl}}/api/v1/waiting-list/{{waitingListId}}/cancel",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"waiting-list",
-										"{{waitingListId}}",
-										"cancel"
-									]
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "waiting-list", "{{waitingListId}}", "cancel"]
 								}
 							},
 							"status": "OK",
@@ -1233,17 +1005,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/progress/all?date=2026-02-10",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"progress",
-								"all"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "progress", "all"],
 							"query": [
 								{
 									"key": "date",
@@ -1268,16 +1031,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/available?date=2026-02-10",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"available"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "available"],
 							"query": [
 								{
 									"key": "date",
@@ -1310,16 +1065,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/assign",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"assign"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "assign"]
 						},
 						"description": "Mechanic assigns themselves to service a specific queue. This allows mechanics to choose which customer they want to service first. The mechanic's name will be shown in the queue details and progress."
 					}
@@ -1345,16 +1092,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/{{waitingListId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"{{waitingListId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "{{waitingListId}}"]
 						},
 						"description": "Mechanic/Admin updates the queue after inspection with time estimate (in minutes) and notes. This is the NEW endpoint for mechanic updates."
 					}
@@ -1372,17 +1111,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/{{waitingListId}}/call",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"{{waitingListId}}",
-								"call"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "{{waitingListId}}", "call"]
 						},
 						"description": "Call the customer - changes status to 'called' (Admin & Mechanic only)"
 					}
@@ -1400,17 +1130,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/{{waitingListId}}/start",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"{{waitingListId}}",
-								"start"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "{{waitingListId}}", "start"]
 						},
 						"description": "Start the service - changes status to 'in_service'"
 					}
@@ -1428,17 +1149,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/{{waitingListId}}/complete",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"{{waitingListId}}",
-								"complete"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "{{waitingListId}}", "complete"]
 						},
 						"description": "Complete the service - changes status to 'completed' (Admin & Mechanic only)"
 					}
@@ -1456,17 +1168,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/mechanic/waiting-list/{{waitingListId}}/no-show",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"mechanic",
-								"waiting-list",
-								"{{waitingListId}}",
-								"no-show"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "mechanic", "waiting-list", "{{waitingListId}}", "no-show"]
 						},
 						"description": "Mark customer as no-show - changes status to 'no_show' (Admin & Mechanic only)"
 					}
@@ -1484,19 +1187,41 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/waiting-list/ticket-count",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"waiting-list",
-								"ticket-count"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "waiting-list", "ticket-count"]
 						},
-						"description": "Get system-wide ticket count statistics (Admin only). Shows total tickets, active tickets, and completed tickets across all customers."
-					}
+						"description": "Get system-wide ticket count statistics with weekly availability (Admin only). Shows:\n- Total tickets, active tickets, completed tickets, deleted tickets\n- System status (active/inactive, accepting bookings)\n- Weekly ticket availability (remaining tickets, week range)\n- Current date and comprehensive status message"
+					},
+					"response": [
+						{
+							"name": "Success with Weekly Info",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/admin/waiting-list/ticket-count",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "admin", "waiting-list", "ticket-count"]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n  \"success\": true,\n  \"message\": \"System ticket count retrieved successfully\",\n  \"data\": {\n    \"total_tickets\": 9,\n    \"active_tickets\": 1,\n    \"completed_tickets\": 8,\n    \"deleted_tickets\": 11,\n    \"system_active\": true,\n    \"accepting_bookings\": true,\n    \"available\": true,\n    \"remaining_tickets\": 19,\n    \"max_tickets_per_week\": 20,\n    \"week_start\": \"2026-02-16\",\n    \"week_end\": \"2026-02-22\",\n    \"date\": \"2026-02-21\",\n    \"message\": \"System has 1 active ticket(s), 8 completed ticket(s), and 11 deleted ticket(s). Total created: 20. ✅ System is active. 19 tickets remaining for the week of Feb 16 to Feb 22.\"\n  }\n}"
+						}
+					]
 				}
 			]
 		},
@@ -1516,14 +1241,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/service-items",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"service-items"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "service-items"]
 						},
 						"description": "Get all active service items available for booking. Returns services like Oil Change, Brake Service, etc."
 					},
@@ -1540,14 +1259,8 @@
 								],
 								"url": {
 									"raw": "{{baseUrl}}/api/v1/service-items",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"service-items"
-									]
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "service-items"]
 								}
 							},
 							"status": "OK",
@@ -1576,15 +1289,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/service-items/grouped",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"service-items",
-								"grouped"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "service-items", "grouped"]
 						},
 						"description": "Get service items grouped by category (Engine, Brakes, Tires, etc.). Recommended for UI display."
 					},
@@ -1601,15 +1307,8 @@
 								],
 								"url": {
 									"raw": "{{baseUrl}}/api/v1/service-items/grouped",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"service-items",
-										"grouped"
-									]
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "service-items", "grouped"]
 								}
 							},
 							"status": "OK",
@@ -1638,15 +1337,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/service-items/{{serviceItemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"service-items",
-								"{{serviceItemId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "service-items", "{{serviceItemId}}"]
 						},
 						"description": "Get details of a specific service item"
 					}
@@ -1687,15 +1379,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/service-items",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"service-items"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "service-items"]
 						},
 						"description": "Create a new service item (Admin only)"
 					}
@@ -1713,16 +1398,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/service-items/all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"service-items",
-								"all"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "service-items", "all"]
 						},
 						"description": "Get all service items including inactive ones (Admin only)"
 					}
@@ -1748,16 +1425,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/service-items/{{serviceItemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"service-items",
-								"{{serviceItemId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "service-items", "{{serviceItemId}}"]
 						},
 						"description": "Update a service item (Admin only)"
 					}
@@ -1775,16 +1444,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/service-items/{{serviceItemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"service-items",
-								"{{serviceItemId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "service-items", "{{serviceItemId}}"]
 						},
 						"description": "Delete a service item (Admin only)"
 					}
@@ -1830,15 +1491,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/invoices",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"invoices"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "invoices"]
 						}
 					}
 				},
@@ -1855,15 +1509,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/invoices?page=1&page_size=20&status=pending",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"invoices"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "invoices"],
 							"query": [
 								{
 									"key": "page",
@@ -1894,16 +1541,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/invoices/{{invoiceId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"invoices",
-								"{{invoiceId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "invoices", "{{invoiceId}}"]
 						}
 					}
 				},
@@ -1928,16 +1567,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/invoices/{{invoiceId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"invoices",
-								"{{invoiceId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "invoices", "{{invoiceId}}"]
 						}
 					}
 				},
@@ -1954,16 +1585,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/invoices/{{invoiceId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"invoices",
-								"{{invoiceId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "invoices", "{{invoiceId}}"]
 						}
 					}
 				},
@@ -1980,15 +1603,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/invoices/{{invoiceId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"invoices",
-								"{{invoiceId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "invoices", "{{invoiceId}}"]
 						}
 					}
 				},
@@ -2013,16 +1629,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/invoices/{{invoiceId}}/pay",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"invoices",
-								"{{invoiceId}}",
-								"pay"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "invoices", "{{invoiceId}}", "pay"]
 						}
 					}
 				},
@@ -2039,16 +1647,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/invoices/{{invoiceId}}/download",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"invoices",
-								"{{invoiceId}}",
-								"download"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "invoices", "{{invoiceId}}", "download"]
 						}
 					}
 				},
@@ -2065,16 +1665,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/waiting-list/{{waitingListId}}/invoice",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"waiting-list",
-								"{{waitingListId}}",
-								"invoice"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "waiting-list", "{{waitingListId}}", "invoice"]
 						}
 					}
 				}
@@ -2096,16 +1688,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/overview",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"overview"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "overview"]
 						}
 					}
 				},
@@ -2122,16 +1706,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/revenue-stats?period=daily",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"revenue-stats"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "revenue-stats"],
 							"query": [
 								{
 									"key": "period",
@@ -2154,16 +1730,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/revenue-stats?period=weekly",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"revenue-stats"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "revenue-stats"],
 							"query": [
 								{
 									"key": "period",
@@ -2186,16 +1754,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/revenue-stats?period=monthly",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"revenue-stats"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "revenue-stats"],
 							"query": [
 								{
 									"key": "period",
@@ -2218,16 +1778,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/service-stats",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"service-stats"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "service-stats"]
 						}
 					}
 				},
@@ -2244,16 +1796,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/queue-stats",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"queue-stats"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "queue-stats"]
 						}
 					}
 				},
@@ -2270,18 +1814,72 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/analytics/mechanic-performance",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"analytics",
-								"mechanic-performance"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "mechanic-performance"]
 						}
 					}
+				},
+				{
+					"name": "Visitor Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/analytics/visitor-stats?period=30days",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "analytics", "visitor-stats"],
+							"query": [
+								{
+									"key": "period",
+									"value": "30days",
+									"description": "Time period: 7days, 30days, or 3months"
+								}
+							]
+						},
+						"description": "Get visitor statistics for different time periods (7 days, 30 days, or 3 months). Includes total visitors, new customers, returning customers, and breakdown by service category."
+					},
+					"response": [
+						{
+							"name": "30 Days Stats",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/admin/analytics/visitor-stats?period=30days",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "admin", "analytics", "visitor-stats"],
+									"query": [
+										{
+											"key": "period",
+											"value": "30days"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n  \"success\": true,\n  \"message\": \"Visitor statistics retrieved successfully\",\n  \"data\": {\n    \"period\": \"30days\",\n    \"total_visitors\": 145,\n    \"total_tickets\": 230,\n    \"new_customers\": 42,\n    \"returning_customers\": 88,\n    \"by_service_category\": [\n      {\n        \"category\": \"Engine\",\n        \"visitor_count\": 65,\n        \"ticket_count\": 95,\n        \"percentage\": 41.3\n      },\n      {\n        \"category\": \"Brakes\",\n        \"visitor_count\": 48,\n        \"ticket_count\": 72,\n        \"percentage\": 31.3\n      },\n      {\n        \"category\": \"Tires\",\n        \"visitor_count\": 35,\n        \"ticket_count\": 43,\n        \"percentage\": 18.7\n      },\n      {\n        \"category\": \"Transmission\",\n        \"visitor_count\": 12,\n        \"ticket_count\": 20,\n        \"percentage\": 8.7\n      }\n    ],\n    \"by_date\": [\n      {\n        \"date\": \"2026-02-21\",\n        \"visitor_count\": 8,\n        \"ticket_count\": 12,\n        \"new_customers\": 2\n      },\n      {\n        \"date\": \"2026-02-20\",\n        \"visitor_count\": 6,\n        \"ticket_count\": 9,\n        \"new_customers\": 1\n      }\n    ],\n    \"timestamp\": \"2026-02-21T10:30:00Z\"\n  }\n}"
+						}
+					]
 				}
 			]
 		},
@@ -2301,15 +1899,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs"]
 						},
 						"description": "Get list of all configured jobs with their schedules and status."
 					}
@@ -2327,16 +1918,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs/active",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs",
-								"active"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs", "active"]
 						},
 						"description": "Get only jobs with status=true (enabled jobs)."
 					}
@@ -2354,16 +1937,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs",
-								"{{jobId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs", "{{jobId}}"]
 						},
 						"description": "Get specific job details by ID."
 					}
@@ -2389,15 +1964,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs"]
 						},
 						"description": "Create a new scheduled job. Cron format: minute hour day month weekday."
 					}
@@ -2423,16 +1991,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs",
-								"{{jobId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs", "{{jobId}}"]
 						},
 						"description": "Update job configuration including schedule and status."
 					}
@@ -2458,17 +2018,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobId}}/status",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs",
-								"{{jobId}}",
-								"status"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs", "{{jobId}}", "status"]
 						},
 						"description": "Quick enable/disable job without changing other properties."
 					}
@@ -2486,16 +2037,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"jobs",
-								"{{jobId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "jobs", "{{jobId}}"]
 						},
 						"description": "Delete a job from the system."
 					}
@@ -2513,16 +2056,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler/status",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler",
-								"status"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler", "status"]
 						},
 						"description": "Get detailed status of all registered jobs including run counts and last execution."
 					}
@@ -2540,15 +2075,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler"]
 						},
 						"description": "Get simple list of registered jobs with scheduler info."
 					}
@@ -2566,16 +2094,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler/DailyWaitingListCleanup",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler",
-								"DailyWaitingListCleanup"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler", "DailyWaitingListCleanup"]
 						},
 						"description": "Get detailed status of a specific job by task name."
 					}
@@ -2593,16 +2113,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler/start",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler",
-								"start"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler", "start"]
 						},
 						"description": "Enable automatic job execution. Sets all jobs to status=true and allows ticket booking."
 					}
@@ -2620,16 +2132,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler/stop",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler",
-								"stop"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler", "stop"]
 						},
 						"description": "Disable automatic job execution. Sets all jobs to status=false and blocks ticket booking."
 					}
@@ -2647,17 +2151,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler/auto-run/status",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler",
-								"auto-run",
-								"status"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler", "auto-run", "status"]
 						},
 						"description": "Check if automatic job execution is enabled."
 					}
@@ -2675,17 +2170,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/scheduler/DailyWaitingListCleanup/run",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"scheduler",
-								"DailyWaitingListCleanup",
-								"run"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "scheduler", "DailyWaitingListCleanup", "run"]
 						},
 						"description": "Manually trigger a job to run immediately, regardless of schedule or auto-run status."
 					}
@@ -2709,14 +2195,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/products?page=1&page_size=20",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "products"],
 							"query": [
 								{
 									"key": "page",
@@ -2743,15 +2223,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/products/{{productId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"{{productId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "products", "{{productId}}"]
 						}
 					}
 				},
@@ -2776,15 +2249,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/products",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"products"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "products"]
 						}
 					}
 				},
@@ -2809,16 +2275,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"products",
-								"{{productId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "products", "{{productId}}"]
 						}
 					}
 				},
@@ -2843,17 +2301,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}/stock",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"products",
-								"{{productId}}",
-								"stock"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "products", "{{productId}}", "stock"]
 						},
 						"description": "Update only the stock quantity of a product. Useful for inventory management without modifying other product details."
 					}
@@ -2871,16 +2320,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"products",
-								"{{productId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "products", "{{productId}}"]
 						}
 					}
 				}
@@ -2902,15 +2343,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles?page=1&page_size=10&search=&sort_by=name&sort_dir=asc&status=active",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles"],
 							"query": [
 								{
 									"key": "page",
@@ -2960,16 +2394,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles/active",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles",
-								"active"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles", "active"]
 						},
 						"description": "Get only active roles. Admin only."
 					}
@@ -3007,15 +2433,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles"]
 						},
 						"description": "Create a new role. Admin only."
 					}
@@ -3033,16 +2452,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles/{{roleId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles",
-								"{{roleId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles", "{{roleId}}"]
 						},
 						"description": "Get role details by ID. Admin only."
 					}
@@ -3068,16 +2479,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles/{{roleId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles",
-								"{{roleId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles", "{{roleId}}"]
 						},
 						"description": "Update role details. Admin only. Note: role name cannot be changed."
 					}
@@ -3095,16 +2498,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles/{{roleId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles",
-								"{{roleId}}"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles", "{{roleId}}"]
 						},
 						"description": "Delete a role. Admin only. Warning: This will remove all user assignments for this role."
 					}
@@ -3122,17 +2517,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/roles/{{roleId}}/users",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"roles",
-								"{{roleId}}",
-								"users"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "roles", "{{roleId}}", "users"]
 						},
 						"description": "Get all users assigned to a specific role. Admin only."
 					}
@@ -3156,17 +2542,8 @@
 						],
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}/roles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"users",
-								"{{userId}}",
-								"roles"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "users", "{{userId}}", "roles"]
 						},
 						"description": "Get all roles assigned to a specific user. Admin only."
 					}
@@ -3192,17 +2569,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}/roles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"users",
-								"{{userId}}",
-								"roles"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "users", "{{userId}}", "roles"]
 						},
 						"description": "Assign a role to a user. Admin only. Users can have multiple roles."
 					}
@@ -3228,17 +2596,8 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}/roles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"users",
-								"{{userId}}",
-								"roles"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "users", "{{userId}}", "roles"]
 						},
 						"description": "Remove a role from a user. Admin only."
 					}
@@ -3248,3 +2607,4 @@
 		}
 	]
 }
+
